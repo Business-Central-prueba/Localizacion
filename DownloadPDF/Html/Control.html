@@ -1,0 +1,92 @@
+<button id="test-endpoint">Probar Endpoint</button>
+
+<script>
+async function fetchAccessToken() {
+    try {
+        console.log('Iniciando fetch para obtener el token...');
+        const response = await fetch("https://businesscentral.dynamics.com/cab6052e-25b1-445b-8541-73eac63fbe58/desa?company=Kis%20Demo&sk=6Eo3wFk8JWbyqg7DVSTP_Q&page=43&dc=0&bookmark=1D_JAAAAACLAgAAAAJ7BjEAMAAyADIANwA4", {
+            method: 'GET',
+            headers: {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-language": "es-ES,es;q=0.9",
+                "cache-control": "max-age=0",
+                "priority": "u=0, i",
+                "sec-ch-ua": "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "document",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "same-origin",
+                "sec-fetch-user": "?1",
+                "upgrade-insecure-requests": "1"
+            },
+            referrer: "https://login.microsoftonline.com/",
+            referrerPolicy: "strict-origin-when-cross-origin",
+            body: null,
+            mode: "cors",
+            credentials: "include"
+        });
+
+        console.log('Respuesta de la solicitud del token:', response);
+
+        if (!response.ok) {
+            throw new Error(`Error en la solicitud del token: ${response.status}`);
+        }
+
+        const text = await response.text();
+        console.log('Texto completo de la respuesta de fetchAccessToken:', text);  // Log completo de la respuesta
+
+        const tokenMatch = text.match(/"accessToken"\s*:\s*"([^"]+)"/);
+
+        if (tokenMatch) {
+            console.log('Token encontrado:', tokenMatch[1]);  // Log del token extraído
+            return tokenMatch[1];
+        } else {
+            console.error('No se encontró un Access Token en la respuesta.');
+            return null;
+        }
+
+    } catch (error) {
+        console.error('Error en fetchAccessToken:', error);
+        return null;
+    }
+}
+
+async function testEndpoint() {
+    console.log('Iniciando prueba del endpoint...');
+
+    const token = await fetchAccessToken();  // Obtiene el token
+
+    console.log('Token recibido:', token);  // Verificar el token recibido
+    
+    if (!token) {
+        console.error('No se pudo obtener el token, abortando la solicitud.');
+        return;
+    }
+
+    try {
+        console.log('Haciendo la solicitud al nuevo endpoint...');
+        const response = await fetch('https://api.businesscentral.dynamics.com/v2.0/cab6052e-25b1-445b-8541-73eac63fbe58/desa/api/KIS/Localizacion/v2.0/projectRecordLinks', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Token OAuth 2.0 en el header
+                'Content-Type': 'application/json'  // Especifica el tipo de contenido
+            }
+        });
+
+        console.log('Respuesta de la solicitud al endpoint:', response);
+        console.log('Token recibido:', token);
+        if (!response.ok) {
+            throw new Error(`Error en la solicitud del endpoint: ${response.status}`);
+        }
+
+        const jsonResponse = await response.json();  // Convertir la respuesta a JSON
+        console.log('JSON recibido:', jsonResponse);  // Log de la respuesta en formato JSON
+
+    } catch (error) {
+        console.error('Error en la solicitud del endpoint:', error);
+    }
+}
+
+document.getElementById('test-endpoint').addEventListener('click', testEndpoint);
+</script>

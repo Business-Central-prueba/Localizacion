@@ -1,0 +1,54 @@
+{
+  "id": "6a2549f9-d8e4-47f1-988b-e99d38678756",
+  "name": "Business Central Localización Chile",
+  "publisher": "KIS",
+  "version": "1.0.3.1",
+  "brief": "",
+  "description": "",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "kis_chile_logo.jpeg",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "17.0.0.0",
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 600000
+    }
+  ],
+  "runtime": "13.1"
+}
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
