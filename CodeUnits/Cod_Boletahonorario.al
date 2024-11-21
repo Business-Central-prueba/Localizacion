@@ -17,7 +17,7 @@ codeunit 50110 Boleta_honorario
         retencionCalculo := (100 - retencionPorcentaje) / 100;
         retencion := ROUND(((base / retencionCalculo) - base), 1, '=');
         retencionPlusBase := retencion + base;
-        //compa
+        //prueba
     end;
 }
 
