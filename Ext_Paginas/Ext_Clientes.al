@@ -1,6 +1,6 @@
 
 //Verificar bien si el ID no está utilizado por otra entidad
-
+//Comentario
 pageextension 50125 "Page Ext. Cliente" extends "Customer Card"
 {
     layout
