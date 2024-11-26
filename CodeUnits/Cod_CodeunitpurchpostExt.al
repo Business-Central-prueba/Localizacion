@@ -1,6 +1,27 @@
 // CodeUnits/Cod50111.CodeunitpurchpostExt.al
 codeunit 50322 CustomPurchPostHandler
 {
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostPurchLineOnBeforePostByType', '', false, false)]
+    local procedure OnPostPurchLineOnBeforePostByType(PurchHeader: Record "Purchase Header"; PurchInvHeader: Record "Purch. Inv. Header"; PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; PurchLine: Record "Purchase Line"; PurchLineACY: Record "Purchase Line"; Sourcecode: Code[10])
+
+    var
+        NewAccountNo: Code[20];
+    begin
+        // Aquí puedes implementar la lógica para determinar el nuevo número de cuenta
+        // Por ejemplo, podrías basarlo en el tipo de línea de compra o en el proveedor
+        if PurchLine."Type" = PurchLine."Type"::Item then begin
+            // Asignar un nuevo número de cuenta para artículos
+            NewAccountNo := '67890'; // Cambia esto al número de cuenta deseado
+            PurchLine."No." := NewAccountNo; // Sobrescribir el número de cuenta en la línea de compra
+        end else if PurchLine."Type" = PurchLine."Type"::"G/L Account" then begin
+            // Asignar un nuevo número de cuenta para cuentas del libro mayor
+            NewAccountNo := '12345'; // Cambia esto al número de cuenta deseado
+            PurchLine."No." := NewAccountNo; // Sobrescribir el número de cuenta en la línea de compra
+        end;
+
+        // Puedes agregar más lógica aquí según sea necesario
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', false, false)]
 
     local procedure OnAfterPostPurchLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; CommitIsSupressed: Boolean; var PurchInvLine: Record "Purch. Inv. Line"; var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PurchLineACY: Record "Purchase Line"; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; SrcCode: Code[10]; xPurchaseLine: Record "Purchase Line")
