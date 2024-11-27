@@ -33,8 +33,8 @@ codeunit 50322 CustomPurchPostHandler
             repeat
                 // Suponiendo que los campos extendidos están en la tabla Purchase Line.
                 PurchLine.Get(TempPurchLine."Document Type", TempPurchLine."Document No.", TempPurchLine."Line No.");
-                TempPurchLine."Your Custom Field 1" := PurchLine."Your Custom Field 1";
-                TempPurchLine."Your Custom Field 2" := PurchLine."Your Custom Field 2";
+                //TempPurchLine."Your Custom Field 1" := PurchLine."Your Custom Field 1";
+                //TempPurchLine."Your Custom Field 2" := PurchLine."Your Custom Field 2";
                 TempPurchLine.Modify();
             until TempPurchLine.Next() = 0;
     end;
