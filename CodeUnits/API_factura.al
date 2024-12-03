@@ -312,24 +312,34 @@ codeunit 50113 "HaulmerAPI Factura"
                     // Extraer y mostrar PDF
                     if JsonResponse.Get('PDF', JsonToken) then begin
                         Base64 := JsonToken.AsValue().AsText();
+                        //Message('Base64: %1', Base64);
 
                         SalesHeader.SetRange("No.", "No.");
                         if SalesHeader.FindFirst() then begin
-                            RecordLink.SetRange("Record ID", SalesHeader.RecordId);
-                            if not RecordLink.FindFirst() then begin
-                                RecordLink.Init();
-                                RecordLink."Record ID" := SalesHeader.RecordId;
-                                RecordLink."User ID" := UserId;
-                                RecordLink.Company := CompanyName;
-                                TempBlob.CreateOutStream(OutStream);
-                                OutStream.WriteText(Base64);
-                                TempBlob.CreateInStream(InStream);
-                                RecordLink.Note.CreateOutStream(OutStream);
-                                CopyStream(OutStream, InStream);
-                                RecordLink.Insert();
-                                // Mostrar mensaje de éxito al guardar el PDF
-                                Message('El PDF se ha guardado exitosamente.');
-                            end;
+                            /*  RecordLink.SetRange("Record ID", SalesHeader.RecordId);
+                              if not RecordLink.FindFirst() then begin
+                                  RecordLink.Init();
+                                  RecordLink."Record ID" := SalesHeader.RecordId;
+                                  RecordLink."User ID" := UserId;
+                                  RecordLink.Company := CompanyName;
+                                  TempBlob.CreateOutStream(OutStream);
+                                  OutStream.WriteText(Base64);
+                                  TempBlob.CreateInStream(InStream);
+                                  RecordLink.Note.CreateOutStream(OutStream);
+                                  CopyStream(OutStream, InStream);
+                                  RecordLink.Insert();
+                                  // Mostrar mensaje de éxito al guardar el PDF
+                                  Message('El PDF se ha guardado exitosamente.');
+                              end;
+                          end;*/
+                            // OutStream para el campo Blob PDF
+                            SalesHeader."Blob PDF".CreateOutStream(OutStream);
+                            OutStream.WriteText(Base64);
+
+                            // Modify the SalesHeader to save the changes
+                            SalesHeader.Modify();
+                            // Mostrar mensaje de éxito al guardar el PDF
+                            Message('El PDF se ha almacenado exitosamente en el campo Blob PDF de tabla Sales Header.');
                         end;
                     end;
 
@@ -365,5 +375,45 @@ codeunit 50113 "HaulmerAPI Factura"
 
     end;
 
+    procedure AttatchPDFDocument(var SalesHeader: Record "Sales Header")
+    var
+        InStream: InStream;
+        OutStream: OutStream;
+        FileName: Text;
+        DocAttach: Record "Document Attachment";
+        TempBlob: Codeunit "Temp Blob";
+        Base64Text: Text;
+        Base64Convert: Codeunit "Base64 Convert";
+    begin
+        if SalesHeader."Blob PDF".HasValue() then begin
+            FileName := 'Factura-' + Format(SalesHeader.Folio) + '.pdf';
+            SalesHeader."Blob PDF".CreateInStream(InStream);
+            InStream.ReadText(Base64Text);
+            Message('Base64Text: %1', Base64Text);
+            TempBlob.CreateOutStream(OutStream);
+            Base64Convert.FromBase64(Base64Text, OutStream);
+            TempBlob.CreateInStream(InStream);
+            //Message('InStream: ', InStream);
+            DocAttach.Init();
+            DocAttach.Validate("Table ID", Database::"Sales Header");
+            DocAttach.Validate("Document Type", Enum::"Sales Document Type"::Order);
+            DocAttach.Validate("No.", SalesHeader."No.");
+            Message('D att No: ' + Format(DocAttach."No."));
+            Message('S head No: ' + Format(SalesHeader."No."));
+            DocAttach.Validate("File Name", FileName);
+            Message('File Name: ' + DocAttach."File Name");
+            DocAttach.Validate("File Extension", 'pdf');
+            Message('File Extension: ' + DocAttach."File Extension");
+            DocAttach."Document Reference ID".ImportStream(InStream, FileName);
+            if not DocAttach.HasContent() then begin
+                Message('No se pudo adjuntar el documento PDF.');
+            end else begin
+                DocAttach.Insert(true);
+                Message('Documento PDF adjunto correctamente en ID: %1' + Format(DocAttach."No.") + ' con el ID: ' + Format(DocAttach."Document Reference ID"));
+            end;
+        end else begin
+            Message('No se encontró un documento PDF para adjuntar.');
+        end;
+    end;
 }
 

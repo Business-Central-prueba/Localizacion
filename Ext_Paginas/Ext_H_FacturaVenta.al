@@ -167,11 +167,18 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                     HaulmerFactura: Codeunit "HaulmerAPI factura";
                     HaulmerFacturaExt: Codeunit "HaulmerAPI Factura Ext";
                     ConfirmSend: Boolean;
+                    DTEcode: text[20];
                 begin
                     ConfirmSend := Confirm('¿Realmente desea emitir factura?', false);
                     if ConfirmSend then begin
-                        case Rec.DTE of
-                            '33':
+                        if Rec.DTE = uppercase('Factura electrónica') then
+                            DTECode := 'FE'
+                        else if Rec.DTE = UpperCase('Factura no afecta o exenta electrónica') then
+                            DTECode := 'FEE'
+                        else
+                            Error('debe Seleccionar un DTE de la tabla Tipos documentos.');
+                        case DTECode of
+                            'FE':
                                 begin
                                     // Acción específica para DTE 33
                                     HaulmerFactura.FacturaTipoDTE33(
@@ -186,12 +193,12 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                                         Rec.Folio,
                                         Rec."Prices Including VAT",
                                         Rec."Sell-to Customer Name",
-                                        Rec."Currency Code",
+                                        rec."Currency Code",
                                         Rec."Posting Date"
+
                                     );
-                                    // Aquí puedes añadir cualquier otra lógica específica para DTE 33
                                 end;
-                            '34':
+                            'FEE':
                                 begin
                                     // Acción específica para DTE 34
                                     HaulmerFacturaExt.FacturaTipoDTE34(
@@ -255,6 +262,39 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                         if CancelPstdSalesInvYesNo.CancelInvoice(Rec) then
                             CurrPage.Close();
                     end;
+                end;
+            }
+            action("Descargar PDF")
+            {
+                ApplicationArea = All;
+                Caption = 'Descargar PDF';
+                Image = Download;
+                trigger OnAction()
+                var
+                    InStream: InStream;
+                    OutStream: OutStream;
+                    FileName: Text;
+                    TempBlob: Codeunit "Temp Blob";
+                    Base64Text: Text;
+                    Base64Convert: Codeunit "Base64 Convert";
+                begin
+                    if Rec."Blob PDF".HasValue() then begin
+                        // Crear el flujo de entrada desde el campo Blob
+                        Rec."Blob PDF".CreateInStream(InStream, TEXTENCODING::UTF8);
+                        InStream.ReadText(Base64Text);
+                        TempBlob.CreateOutStream(OutStream);
+
+                        Base64Convert.FromBase64(Base64Text, OutStream);
+                        // Definir el nombre del archivo
+                        FileName := 'Factura-' + Format(Rec.Folio) + '.pdf';
+                        TempBlob.CreateInStream(InStream);
+                        // Descargar el archivo
+                        DownloadFromStream(InStream, '', '', '', FileName);
+                        Clear(InStream);
+                        Clear(OutStream);
+                        Clear(TempBlob);
+                    end else
+                        Message('El documento PDF no está disponible.');
                 end;
             }
         }

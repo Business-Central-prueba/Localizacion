@@ -80,15 +80,15 @@ codeunit 50101 InstalacionAplicacion
     //----------------------------------Poblado de tabla de Categoria Actividad Económica
     procedure LlenadodeTablasCategoriaEconomica()
     begin
-        InsertarCategoriaActividadEconomica('1', 'Agricultura, Servicios Agricolas, Caza, Silvicultura y Pesca');
-        InsertarCategoriaActividadEconomica('2', 'Minas, Petróleo y Canteras');
-        InsertarCategoriaActividadEconomica('3', 'Industrias Manufactureras');
-        InsertarCategoriaActividadEconomica('4', 'Electricidad, Gas y Agua');
-        InsertarCategoriaActividadEconomica('5', 'Construcción');
-        InsertarCategoriaActividadEconomica('6', 'Comercio por mayor');
-        InsertarCategoriaActividadEconomica('7', 'Comercio por menor');
-        InsertarCategoriaActividadEconomica('8', 'Restaurantes, Cafes y otros establecimientos que expenden comidas y bebidas');
-        InsertarCategoriaActividadEconomica('9', 'Transporte, Almacenamiento y Comunicaciones');
+        InsertarCategoriaActividadEconomica('01', 'Agricultura, Servicios Agricolas, Caza, Silvicultura y Pesca');
+        InsertarCategoriaActividadEconomica('02', 'Minas, Petróleo y Canteras');
+        InsertarCategoriaActividadEconomica('03', 'Industrias Manufactureras');
+        InsertarCategoriaActividadEconomica('04', 'Electricidad, Gas y Agua');
+        InsertarCategoriaActividadEconomica('05', 'Construcción');
+        InsertarCategoriaActividadEconomica('06', 'Comercio por mayor');
+        InsertarCategoriaActividadEconomica('07', 'Comercio por menor');
+        InsertarCategoriaActividadEconomica('08', 'Restaurantes, Cafes y otros establecimientos que expenden comidas y bebidas');
+        InsertarCategoriaActividadEconomica('09', 'Transporte, Almacenamiento y Comunicaciones');
         InsertarCategoriaActividadEconomica('10', 'Finanzas, Seguros, Bienes Inmuebles y Servicios Tecnicos, Profesionales y Otros');
         InsertarCategoriaActividadEconomica('11', 'Servicios Estatales, Sociales, Personales e Internacionales');
         InsertarCategoriaActividadEconomica('12', 'Servicios Sociales e Instrucción Pública');
@@ -99,15 +99,15 @@ codeunit 50101 InstalacionAplicacion
     //-------------------------------------Poblado de tabla Subcategoría económica
     procedure LlenadodeTablasSubcategoriaEconomica()
     begin
-        InsertarSubcategoriaActividadEconomica('1', 'Producción agropecuaria', '1');
-        InsertarSubcategoriaActividadEconomica('2', 'Servicios agrícolas', '1');
-        InsertarSubcategoriaActividadEconomica('3', 'Caza', '1');
-        InsertarSubcategoriaActividadEconomica('4', 'Silvicultura', '1');
-        InsertarSubcategoriaActividadEconomica('5', 'Pesca', '1');
-        InsertarSubcategoriaActividadEconomica('6', 'Minas, petróleo y canteras', '2');
-        InsertarSubcategoriaActividadEconomica('7', 'Productos alimenticios', '3');
-        InsertarSubcategoriaActividadEconomica('8', 'Industrias de bebidas', '3');
-        InsertarSubcategoriaActividadEconomica('9', 'Industrias del tabaco', '3');
+        InsertarSubcategoriaActividadEconomica('01', 'Producción agropecuaria', '1');
+        InsertarSubcategoriaActividadEconomica('02', 'Servicios agrícolas', '1');
+        InsertarSubcategoriaActividadEconomica('03', 'Caza', '1');
+        InsertarSubcategoriaActividadEconomica('04', 'Silvicultura', '1');
+        InsertarSubcategoriaActividadEconomica('05', 'Pesca', '1');
+        InsertarSubcategoriaActividadEconomica('06', 'Minas, petróleo y canteras', '2');
+        InsertarSubcategoriaActividadEconomica('07', 'Productos alimenticios', '3');
+        InsertarSubcategoriaActividadEconomica('08', 'Industrias de bebidas', '3');
+        InsertarSubcategoriaActividadEconomica('09', 'Industrias del tabaco', '3');
         InsertarSubcategoriaActividadEconomica('10', 'Industria textil', '3');
         InsertarSubcategoriaActividadEconomica('11', 'Confección de prendas de vestir', '3');
         InsertarSubcategoriaActividadEconomica('12', 'Industria del cuero', '3');

@@ -130,10 +130,17 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
         {
             DataClassification = ToBeClassified;
         }
-        field(50666; "Blob PDF"; blob)
+
+        field(50790; "Blob PDF"; blob)
         {
-            Caption = 'PDF';
-            DataClassification = ToBeClassified;
+            caption = 'PDF';
+            DataClassification = CustomerContent;
+        }
+
+        field(50791; "Blob"; Blob)
+        {
+            Caption = 'blob';
+            DataClassification = CustomerContent;
         }
 
     }

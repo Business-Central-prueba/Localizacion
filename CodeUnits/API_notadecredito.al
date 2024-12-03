@@ -55,6 +55,13 @@ codeunit 50119 "HaulmerAPI Notadecredito"
         Saleslineinvoice: Record "Sales Invoice Line";
 
         CurrencyExchange: Record "Currency Exchange Rate";
+
+        Base64Text: Text;
+        Base64Convert: Codeunit "Base64 Convert";
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+        InStream: InStream;
+        FileName: Text;
     begin
         // Validación cuando el "Currency Code" es 'UF'
 
@@ -293,34 +300,42 @@ codeunit 50119 "HaulmerAPI Notadecredito"
             if HttpResponseMessage.HttpStatusCode() = 200 then begin
                 HttpResponseMessage.Content.ReadAs(ResponseText);
                 // Parsear la respuesta JSON
-                // Extraer y mostrar FOLIO
-                if JsonResponse.Get('FOLIO', JsonToken) then begin
-                    FolioFactura := JsonToken.AsValue().AsInteger();
-                    // Aquí debes encontrar y actualizar el registro de la factura en la base de datos
-                    // Actualizar el campo Folio con el valor recibido
-                    SalesHeader.SetRange("No.", "No.");
-                    if SalesHeader.FindFirst() then begin
-                        Folio := FolioFactura;
-                        SalesHeader.Folio := Folio;
-                        SalesHeader.Modify;
+                if JsonResponse.ReadFrom(ResponseText) then begin
+                    // Extraer y mostrar FOLIO
+                    if JsonResponse.Get('FOLIO', JsonToken) then begin
+                        FolioFactura := JsonToken.AsValue().AsInteger();
+                        // Aquí debes encontrar y actualizar el registro de la factura en la base de datos
+                        // Actualizar el campo Folio con el valor recibido
+                        SalesHeader.SetRange("No.", "No.");
+                        if SalesHeader.FindFirst() then begin
+                            Folio := FolioFactura;
+                            SalesHeader.Folio := Folio;
+                            SalesHeader.Modify;
+                        end;
                     end;
-                end;
-                //Extraer y mostrar PDF
-                if JsonResponse.Get('PDF', JsonToken) then begin
-                    Base64 := JsonToken.AsValue().AsText();
+                    //Extraer y mostrar PDF
+                    if JsonResponse.Get('PDF', JsonToken) then begin
+                        Message('Se descargara la nota de crédito como documento PDF');
+                        Base64 := JsonToken.AsValue().AsText();
+                        TempBlob.CreateOutStream(OutStream);
+                        Base64Convert.FromBase64(Base64, OutStream);
+                        FileName := 'Nota-de-Credito-' + Format(Folio) + '.pdf';
+                        TempBlob.CreateInStream(InStream);
+                        DownloadFromStream(InStream, '', '', '', FileName);
+                        Clear(InStream);
+                        Clear(OutStream);
+                        Clear(TempBlob);
+                        //  Convertir el texto del PDF a un blob
 
-                    //  Convertir el texto del PDF a un blob
-
-                    //Obtener el SalesHeader
-                end;
-                //Extraer y mostrar TOKEN
-                if JsonResponse.Get('TOKEN', JsonToken) then begin
-                    Token := JsonToken.AsValue().AsText();
-                end else begin
-
-                    Message(ResponseText);
-                end;
-
+                        //Obtener el SalesHeader
+                    end;
+                    //Extraer y mostrar TOKEN
+                    if JsonResponse.Get('TOKEN', JsonToken) then begin
+                        Token := JsonToken.AsValue().AsText();
+                    end else begin
+                        Message(ResponseText);
+                    end;
+                end; // Parsear la respuesta JSON
             end else begin
                 Message('Error al enviar la solicitud por favor,actualize la pagina y reintente   %1', HttpResponseMessage.HttpStatusCode());
             end;

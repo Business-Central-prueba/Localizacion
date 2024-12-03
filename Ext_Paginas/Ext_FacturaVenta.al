@@ -100,8 +100,15 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                 ApplicationArea = All;
                 ToolTip = 'Localización Chilena. Comuna';
                 Caption = 'Comuna';
-
+                trigger OnLookup(var Text: Text): Boolean
+                var
+                    ItemRec: Record "Post Code";
+                begin
+                    if Page.RunModal(Page::"Post Codes", ItemRec) = Action::LookupOK then
+                        Rec."Sell-to County" := ItemRec.County;
+                end;
             }
+
             group(PDFviewer)
             {
                 field(PDF; Rec."Blob PDF")
@@ -109,7 +116,7 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                     Caption = 'Large Text';
                     ApplicationArea = All;
                     MultiLine = true;
-                    ShowCaption = false;
+                    ShowCaption = true;
                     ToolTip = 'Codigo base64 pdf';
                     Editable = true;
                     Visible = true;
@@ -263,10 +270,9 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                                         Rec."Prices Including VAT",
                                         Rec."Sell-to Customer Name"
                                     );
-                                    // Aquí puedes añadir cualquier otra lógica específica para DTE 34
                                 end;
                             else
-                                Error('Tipo de DTE no soportado.');
+                                Error('Tipo de DTE (' + Rec.DTE + ') no soportado.');
                         end;
                     end;
                 end;
@@ -275,7 +281,7 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
             action("Seleccionar Fecha Divisa")
             {
                 ApplicationArea = All;
-                Caption = 'Seleccionar Fecha';
+                Caption = 'Selec Fecha Divisa';
                 Image = Calendar;
                 trigger OnAction()
                 var
@@ -305,9 +311,55 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                     end;
                 end;
             }
+            action("Descargar PDF")
+            {
+                ApplicationArea = All;
+                Caption = 'Descargar PDF';
+                Image = Download;
+                Promoted = true;
+                PromotedIsBig = true;
+                trigger OnAction()
+                var
+                    InStream: InStream;
+                    OutStream: OutStream;
+                    FileName: Text;
+                    TempBlob: Codeunit "Temp Blob";
+                    Base64Text: Text;
+                    Base64Convert: Codeunit "Base64 Convert";
+                begin
+                    if Rec."Blob PDF".HasValue() then begin
+                        // Crear el flujo de entrada desde el campo Blob
+                        Rec."Blob PDF".CreateInStream(InStream, TEXTENCODING::UTF8);
+                        InStream.ReadText(Base64Text);
+                        TempBlob.CreateOutStream(OutStream);
 
+                        Base64Convert.FromBase64(Base64Text, OutStream);
+                        // Definir el nombre del archivo
+                        FileName := 'Factura-' + Format(Rec.Folio) + '.pdf';
+                        TempBlob.CreateInStream(InStream);
+                        // Descargar el archivo
+                        DownloadFromStream(InStream, '', '', '', FileName);
+                        Clear(InStream);
+                        Clear(OutStream);
+                        Clear(TempBlob);
+                        //Message('Key del documento: ' + Format(Rec."No."));
+                    end else
+                        Message('El documento PDF no está disponible.');
 
-
+                end;
+            }
+            action("Adjuntar PDF")
+            {
+                ApplicationArea = All;
+                Caption = 'Adjuntar PDF';
+                Image = Attach;
+                trigger OnAction()
+                var
+                    HaulmerFactura: Codeunit "HaulmerAPI factura";
+                begin
+                    HaulmerFactura.AttatchPDFDocument(Rec);
+                end;
+            }
         }
 
 
