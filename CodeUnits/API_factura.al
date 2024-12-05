@@ -306,7 +306,7 @@ codeunit 50113 "HaulmerAPI Factura"
                         end;
 
                         // Mostrar mensaje con el folio
-                        Message('El folio asignado es: %1', FolioFactura);
+                        Message('El folio asignado desde el SII es: %1', FolioFactura);
                     end;
 
                     // Extraer y mostrar PDF
@@ -339,7 +339,7 @@ codeunit 50113 "HaulmerAPI Factura"
                             // Modify the SalesHeader to save the changes
                             SalesHeader.Modify();
                             // Mostrar mensaje de éxito al guardar el PDF
-                            Message('El PDF se ha almacenado exitosamente en el campo Blob PDF de tabla Sales Header.');
+                            Message('El PDF generado se ha almacenado exitosamente en la factura de venta.');
                         end;
                     end;
 
@@ -352,8 +352,9 @@ codeunit 50113 "HaulmerAPI Factura"
                     end;
 
                     // Mostrar mensaje final de éxito
-                    Message('Factura emitida con folio N %1', FolioFactura);
-                    Message('Factura Emitida codigo Base64 para decode %1', Base64);
+                    //Message('Factura emitida con folio N %1', FolioFactura);
+                    //Message('Factura Emitida codigo Base64 para decode %1', Base64);
+
                     // Mostrar el contenido de la respuesta para depuración
 
 

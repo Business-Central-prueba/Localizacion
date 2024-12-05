@@ -18,11 +18,11 @@ page 50200 "P_FactboxFactura"
             }
             field(Desc; rec.Description)
             {
-
+                ApplicationArea = Basic, Suite;
             }
             field("Unit Price"; rec."Unit Price")
             {
-
+                ApplicationArea = Basic, Suite;
             }
         }
     }

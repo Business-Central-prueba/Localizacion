@@ -130,6 +130,8 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                 ToolTip = 'codigo PDF';
                 Caption = 'PDF';
                 Editable = true;
+                Visible = false;
+                Enabled = false;
             }
         }
     }
@@ -146,6 +148,8 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Visible = false;
+                Enabled = false;
 
                 trigger OnAction()
                 begin
@@ -161,6 +165,8 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Visible = false;
+                Enabled = false;
 
                 trigger OnAction()
                 var
@@ -232,6 +238,8 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 Image = Cancel;
+                Visible = false;
+                Enabled = false;
 
                 trigger OnAction()
                 var
@@ -269,6 +277,7 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                 ApplicationArea = All;
                 Caption = 'Descargar PDF';
                 Image = Download;
+                Visible = false;
                 trigger OnAction()
                 var
                     InStream: InStream;

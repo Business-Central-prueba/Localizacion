@@ -30,7 +30,7 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
             field(Folio; Rec.Folio)
             {
                 ApplicationArea = All;
-                ToolTip = 'Localización Chilena. Número de folio de venta';
+                ToolTip = 'Localización Chilena. Número de folio de venta generado por el SII.';
                 Caption = 'N° Folio';
                 Editable = false; // Campo solo de visualización
             }
@@ -113,13 +113,13 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
             {
                 field(PDF; Rec."Blob PDF")
                 {
-                    Caption = 'Large Text';
+                    Caption = 'Codigo base64 pdf';
                     ApplicationArea = All;
                     MultiLine = true;
                     ShowCaption = true;
                     ToolTip = 'Codigo base64 pdf';
                     Editable = true;
-                    Visible = true;
+                    Visible = false;
 
                     trigger OnValidate()
                     begin
@@ -178,15 +178,17 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
 
         }
 
-
-        addfirst(FactBoxes)
-        {
-            part(DocumentoPDF; "descarga pdf")
-            {
-                ApplicationArea = All;
-                Visible = true;
-            }
-        }
+        /*
+                addfirst(FactBoxes)
+                {
+                    part(DocumentoPDF; "descarga pdf")
+                    {
+                        ApplicationArea = All;
+                        Visible = false;
+                        Enabled = false;
+                    }
+                }
+        */
 
     }
 
@@ -203,10 +205,13 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Visible = false;
+                Enabled = false;
                 trigger OnAction()
                 begin
                     Page.Run(Page::"API Configuration Page");
                 end;
+
             }
 
             action("Enviar SII")
@@ -217,7 +222,8 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
-
+                Visible = false;
+                Enabled = false;
                 trigger OnAction()
                 var
                     HaulmerFactura: Codeunit "HaulmerAPI factura";
@@ -316,8 +322,8 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                 ApplicationArea = All;
                 Caption = 'Descargar PDF';
                 Image = Download;
-                Promoted = true;
-                PromotedIsBig = true;
+                Visible = false;
+
                 trigger OnAction()
                 var
                     InStream: InStream;
@@ -353,6 +359,7 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                 ApplicationArea = All;
                 Caption = 'Adjuntar PDF';
                 Image = Attach;
+                Visible = false;
                 trigger OnAction()
                 var
                     HaulmerFactura: Codeunit "HaulmerAPI factura";

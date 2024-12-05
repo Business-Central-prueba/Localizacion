@@ -2,6 +2,16 @@
 codeunit 50322 CustomPurchPostHandler
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', false, false)]
+    local procedure OnAfterPostPurchLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; CommitIsSupressed: Boolean; var PurchInvLine: Record "Purch. Inv. Line"; var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PurchLineACY: Record "Purchase Line"; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; SrcCode: Code[10]; xPurchaseLine: Record "Purchase Line")
+    var
+        AllocationLine: Record "Allocation Line";
+    begin
+        //AllocationLine.Amount := PurchaseLine."Retención + base";
+        /*Message('OnAfterPostPurchLine');
+        Message('Monto base: ' + Format(AllocationLine.Amount));*/
+    end;
+    /*
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', false, false)]
 
     local procedure OnAfterPostPurchLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; CommitIsSupressed: Boolean; var PurchInvLine: Record "Purch. Inv. Line"; var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PurchLineACY: Record "Purchase Line"; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; SrcCode: Code[10]; xPurchaseLine: Record "Purchase Line")
     var
@@ -10,8 +20,6 @@ codeunit 50322 CustomPurchPostHandler
         TotalAccount: Record "G/L Account"; //Instancia de cuenta Total Retenciones
         RetentionAccount: Record "G/L Account"; //Instancia de cuenta Retenciones
         BaseAmountAccount: Record "G/L Account"; //Instancia de cuenta Monto Base de la factura
-        Base64: Codeunit "Base64 Convert";
-        outSTR: OutStream;
 
     begin
         if PurchaseHeader."DTE" = 'Boleta de honorarios' then begin
@@ -23,8 +31,6 @@ codeunit 50322 CustomPurchPostHandler
 
                     Message('Se ha encontrado la cuenta. Procediendo con la inserción. Cuenta: ' + Format(TotalAccount."No.")
                 + ' Nombre: ' + TotalAccount.Name + 'Tipo de doc de purchase: ' + Format(PurchaseLine."Document Type"));
-
-
                     //Inicializar la línea de inserción en G/L
                     CustomLine.Init();
                     CustomLine."Posting Date" := PurchaseLine."Order Date";
@@ -36,7 +42,7 @@ codeunit 50322 CustomPurchPostHandler
                     CustomLine.Amount := PurchaseLine."Retención + base" * (-1);
                     GLPost.RunWithCheck(CustomLine);
 
-                    //Cuenta de retenciones 999999
+
                     CustomLine.Init();
                     CustomLine."Posting Date" := PurchaseLine."Order Date";
                     CustomLine."Account No." := RetentionAccount."No."; //Este número es la cuenta obtenida en RetentionAccount get
@@ -55,17 +61,23 @@ codeunit 50322 CustomPurchPostHandler
                     CustomLine.Amount := PurchaseLine."Direct Unit Cost";
                     GLPost.RunWithCheck(CustomLine);
 
-                    //Cuenta de balance para consistencia de la cuenta
-                    //CustomLine."Bal. Account No." := CustomBalanceAccount."No."; //Este número es la cuenta obtenida en CustomBalanceAccount get
-                    //CustomLine."Bal. Account Type" := CustomLine."Account Type"::"G/L Account";
-                    //CustomLine.Amount := PurchLine."Retención" + PurchLine."Retención + base"; // Usa tus campos personalizados
-                    //CustomLine.Amount := '0';
-
                 end else begin
                     // Mostrar un popup si no se encuentra la cuenta
                     Message('No se encontró la cuenta . Verifica la configuración de cuentas.');
                 end;
             end;
         end;
+    end;
+    */
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeModifyTempLine', '', false, false)]
+    local procedure OnBeforeModifyTempLine(var TempPurchaseLine: Record "Purchase Line" temporary)
+    var
+        AllocationLine: Record "Allocation Line";
+    begin
+        /*AllocationLine.Amount := TempPurchaseLine."Retención + base";
+        Message('OnBeforeModifyTempLine');
+        Message('Monto base: ' + Format(TempPurchaseLine."Direct Unit Cost"));
+        Message('Monto total: ' + Format(TempPurchaseLine."Retención + base"));
+        Message('Monto total IVA: ' + Format(TempPurchaseLine."Amount Including VAT"));*/
     end;
 }

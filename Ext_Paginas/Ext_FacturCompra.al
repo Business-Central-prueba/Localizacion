@@ -104,6 +104,9 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                 ApplicationArea = All;
                 ToolTip = 'Localización Chilena. Documento Tributario Electrónico (DTE)';
                 Caption = 'DTE';
+                //                Visible = false;
+                //              Enabled = false;
+                //ShowMandatory = true;
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     ItemRec: Record tipoDocumentos;
@@ -201,6 +204,8 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Visible = false;
+                Enabled = false;
 
                 trigger OnAction()
                 begin
