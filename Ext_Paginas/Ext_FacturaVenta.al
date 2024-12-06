@@ -32,7 +32,7 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                 ApplicationArea = All;
                 ToolTip = 'Localización Chilena. Número de folio de venta generado por el SII.';
                 Caption = 'N° Folio';
-                Editable = false; // Campo solo de visualización
+                Editable = true; // Campo solo de visualización
             }
 
             field(codigoActividad; Rec.codigoActividad)
