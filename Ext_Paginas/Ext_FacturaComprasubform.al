@@ -37,6 +37,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 Caption = 'Retención'; // Cambia el nombre del campo según sea necesario
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
                 Editable = false; // Permitir edición
+                Visible = false;
                 // Puedes agregar más propiedades según sea necesario
             }
             field(REtencionplusbase; rec."Retención + base")
@@ -45,6 +46,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 Caption = 'Retención incl.';
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
                 Editable = false;
+                Visible = false;
 
                 // Lógica para calcular el valor
                 trigger OnValidate()
@@ -59,10 +61,10 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             field(vatPercentage; Rec."VAT %")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = '% Impuesto retenido'; // Cambia el nombre del campo según sea necesario
+                Caption = '% Impuesto retenido';
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
                 Editable = false; // Permitir edición
-                // Puedes agregar más propiedades según sea necesario
+                Visible = false;
             }
 
         }
