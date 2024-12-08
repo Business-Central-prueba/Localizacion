@@ -1,7 +1,8 @@
-tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
+tableextension 50103 ExtensionPurchaseInvoiceHeader extends "Purch. Inv. Header"
 {
     fields
     {
+
         field(50704; codigoDocVenta; Integer)
         {
             Caption = 'Codigo Doc. Compra';
@@ -9,10 +10,9 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             TableRelation = DocumentoVentas;
         }
 
-
-        field(50703; Folio; Integer)
+        field(50770; Folio; Integer)
         {
-            Caption = 'Folio';
+            Caption = 'Localización Chile. Número de Folio';
             DataClassification = ToBeClassified;
         }
 
@@ -30,10 +30,11 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             TableRelation = tipoDocumentos;
         }
 
-        field(50776; listFormaPago; Option)
+
+        field(50774; listFormaPago; Option)
         {
             DataClassification = ToBeClassified;
-            Caption = 'Forma de Pago';
+            Caption = 'Localización Chile. Forma de Pago';
             OptionMembers = ,Contado,Crédito,"Sin Costo (entrega gratuita)";
 
             trigger OnValidate()
@@ -49,27 +50,27 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             end;
         }
 
-        field(50777; formaPago; Integer)
+        field(50775; formaPago; Integer)
         {
             DataClassification = ToBeClassified;
             Caption = 'Forma de Pago';
         }
 
-        field(50778; Sucursal; Text[75])
+        field(50776; Sucursal; Text[75])
         {
             Caption = 'Sucursal';
             DataClassification = ToBeClassified;
             Editable = true;
         }
 
-        field(50779; Transportista; Code[60])
+        field(50781; Transportista; Code[60])
         {
             Caption = 'Forma de Entrega';
             DataClassification = ToBeClassified;
             TableRelation = "Shipping Agent";
         }
 
-        field(50780; codigoActividad; Code[250])
+        field(50778; codigoActividad; Code[250])
         {
             Caption = 'Actividad Economica';
             DataClassification = ToBeClassified;
@@ -78,7 +79,7 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
 
 
 
-        field(50782; patenteTransportista; Text[6])
+        field(50780; patenteTransportista; Text[6])
         {
             Caption = 'Patente Transportista';
             DataClassification = ToBeClassified;
@@ -96,7 +97,7 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             end;
         }
 
-        field(50784; DV; Code[1])
+        field(50782; DV; Code[1])
         {
             Caption = 'Dígito verificador';
             DataClassification = ToBeClassified;
@@ -108,13 +109,14 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             end;
         }
 
-        field(50781; rutTransportista; Text[12])//--Obsoleto
+        field(50779; rutTransportista; Text[12])//--Obsoleto
         {
             Caption = 'Rut Transportista';
             DataClassification = ToBeClassified;
             ObsoleteState = Removed;
             ObsoleteReason = 'Problemas con el tipo de valor';
         }
+        /*
         modify("Sell-to Customer Name")//--Cuando se haga un cambio dentro de una field (Sell-to Customer Name), se gatillará esta función para cambiar el valor de la actividad económica
         {
             trigger OnAfterValidate()
@@ -143,6 +145,7 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             Caption = 'blob';
             DataClassification = CustomerContent;
         }
+        */
 
     }
 }

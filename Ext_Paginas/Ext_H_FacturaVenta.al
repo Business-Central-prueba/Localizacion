@@ -13,7 +13,7 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                 ApplicationArea = All;
                 ToolTip = 'Localización Chilena. Número de folio de venta';
                 Caption = 'N° Folio';
-                Editable = false; // Campo solo de visualización
+                Editable = true; // Campo solo de visualización
             }
 
             field(codigoActividad; Rec.codigoActividad)
