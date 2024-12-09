@@ -8,10 +8,10 @@ codeunit 50100 ValidarDigitoVerificador
     begin
         rut_cliente := RUT;
         length := StrLen(Format(rut_cliente));
-        if (length < 7) OR (length > 8 ) then begin
+        if (length < 7) OR (length > 8) then begin
             Message('Rut inválido');
             Error('El Rut ingresado no es válido');
-        end; 
+        end;
     end;
 
 
@@ -88,10 +88,9 @@ codeunit 50100 ValidarDigitoVerificador
                 if (dv = 10) then
                     k := 'k';
 
-            if (digitoV = Format(dv)) OR (digitoV = k) then
-            begin
+            if (digitoV = Format(dv)) OR (digitoV = k) then begin
                 //Message('El dígito verificador es correcto')
-            end   
+            end
             else
                 Error('El dígito verificador ingresado es inválido')
 
@@ -144,8 +143,7 @@ codeunit 50100 ValidarDigitoVerificador
                     if (dv = 10) then
                         k := 'k';
 
-                if (digitoV = Format(dv)) OR (digitoV = k) then
-                begin
+                if (digitoV = Format(dv)) OR (digitoV = k) then begin
                     //Message('El dígito verificador es correcto')
                 end
                 else
@@ -153,5 +151,27 @@ codeunit 50100 ValidarDigitoVerificador
             end;
 
 
+    end;
+
+    procedure ValidarRutString(Rut: Text[20])
+    var
+        Regex: Codeunit Regex;
+        IsValidRut: Boolean;
+        RutText: Text[8];
+        RutNumber: Integer;
+        CheckDigit: Text[1];
+    begin
+        IsValidRut := true;
+        if not Regex.IsMatch(Rut, '^[0-9]{8}-[0-9kK]{1}$') then begin
+            Error('El formato del RUT es inválido. Debe ser "99999999-9". Sin puntos y con guión.');
+            IsValidRut := false;
+        end;
+        if IsValidRut then begin
+            RutText := CopyStr(Rut, 1, 8);
+            if not Evaluate(RutNumber, RutText) then
+                Error('El RUT contiene caracteres no numéricos en la parte numérica.');
+            CheckDigit := UpperCase(CopyStr(Rut, 10, 1));
+            ValidarDigitoVerificador(RutNumber, CheckDigit);
+        end;
     end;
 }

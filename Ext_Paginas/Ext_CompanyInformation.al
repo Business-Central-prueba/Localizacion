@@ -8,7 +8,9 @@ pageextension 50101 "Company Details" extends "Company Information"
             {
                 ApplicationArea = All;
                 ToolTip = 'Ingresar Rut sin puntos y con Guión';
-                Caption = 'Rut Company';
+                Caption = 'Rut Empresa';
+                NotBlank = true;
+                ShowMandatory = true;
             }
             field("Comuna"; Rec.County)
             {
