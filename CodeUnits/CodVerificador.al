@@ -149,8 +149,6 @@ codeunit 50100 ValidarDigitoVerificador
                 else
                     Error('El dígito verificador ingresado es inválido');
             end;
-
-
     end;
 
     procedure CalcularDigitoVerificador(RUT: Integer): Code[1]
@@ -283,4 +281,25 @@ codeunit 50100 ValidarDigitoVerificador
 
 
 
+    procedure ValidarRutString(Rut: Text[20])
+    var
+        Regex: Codeunit Regex;
+        IsValidRut: Boolean;
+        RutText: Text[8];
+        RutNumber: Integer;
+        CheckDigit: Text[1];
+    begin
+        IsValidRut := true;
+        if not Regex.IsMatch(Rut, '^[0-9]{8}-[0-9kK]{1}$') then begin
+            Error('El formato del RUT es inválido. Debe ser "99999999-9". Sin puntos y con guión.');
+            IsValidRut := false;
+        end;
+        if IsValidRut then begin
+            RutText := CopyStr(Rut, 1, 8);
+            if not Evaluate(RutNumber, RutText) then
+                Error('El RUT contiene caracteres no numéricos en la parte numérica.');
+            CheckDigit := UpperCase(CopyStr(Rut, 10, 1));
+            ValidarDigitoVerificador(RutNumber, CheckDigit);
+        end;
+    end;
 }
