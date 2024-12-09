@@ -302,4 +302,5 @@ codeunit 50100 ValidarDigitoVerificador
             ValidarDigitoVerificador(RutNumber, CheckDigit);
         end;
     end;
+    //prueba rama dev
 }
