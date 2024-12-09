@@ -16,7 +16,7 @@ pageextension 50101 "Company Details" extends "Company Information"
             {
                 ApplicationArea = All;
                 ToolTip = 'County';
-                Caption = 'Comuna';
+                Caption = 'County';
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     ItemRec: Record "Post Code";
