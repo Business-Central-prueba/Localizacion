@@ -43,13 +43,6 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
 
         }
 
-        modify("Currency Code")
-        {
-            Visible = not esBoletaHonorarios;
-            ToolTip = 'Especifica la código de moneda para la cantidad en las lineas de compra.';
-        }
-
-
         addfirst(General)
         {
 

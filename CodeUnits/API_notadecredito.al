@@ -28,6 +28,7 @@ codeunit 50119 "HaulmerAPI Notadecredito"
         NewLinkID: integer;
 
         SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesLineJson: Text;
         NmbItem: Text;
         QtyItem: Decimal;
@@ -171,6 +172,7 @@ codeunit 50119 "HaulmerAPI Notadecredito"
 
             // Preparar los datos de detalle
             Saleslineinvoice.SetRange("Document No.", "No.");
+            SalesInvoiceHeader.SetRange("No.", "No.");
             if Saleslineinvoice.FindSet() then begin
                 TAX := Saleslineinvoice."VAT %";
                 TotalconIVA := Saleslineinvoice."Amount Including VAT";
@@ -326,7 +328,10 @@ codeunit 50119 "HaulmerAPI Notadecredito"
                         Clear(OutStream);
                         Clear(TempBlob);
                         //  Convertir el texto del PDF a un blob
-
+                        SalesInvoiceHeader."Nota Credito PDF".CreateOutStream(OutStream);
+                        OutStream.WriteText(Base64);
+                        SalesInvoiceHeader.Modify();
+                        // Modify the SalesHeader to save the changes
                         //Obtener el SalesHeader
                     end;
                     //Extraer y mostrar TOKEN

@@ -144,5 +144,11 @@ tableextension 50102 ExtensionSalesInvocieHeader extends "Sales Invoice Header"
             DataClassification = CustomerContent;
         }
 
+        field(50792; "Nota Credito PDF"; blob)
+        {
+            caption = 'Nota Credito PDF';
+            DataClassification = CustomerContent;
+        }
+
     }
 }
