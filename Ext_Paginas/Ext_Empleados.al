@@ -16,7 +16,7 @@ pageextension 50129 "Page Ext. Rut Empelado" extends "Employee Card"
                 ToolTip = 'Localización Chilena. Dígito verificador';
                 Caption = 'Dígito verificador';
                 ApplicationArea = All;
-
+                Enabled = true;
             }
         }
     }

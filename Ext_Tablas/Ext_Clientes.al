@@ -50,6 +50,7 @@ tableextension 50109 "Ext. Cliente Actividad" extends Customer
                 ValidarRUT: Codeunit ValidarDigitoVerificador;
             begin
                 ValidarRUT.VerificarRUT(Rut_Cliente);
+                Rec.DV := ValidarRUT.CalcularDigitoVerificador(Rut_Cliente); // Asignar el DV calculado
             end;
         }
 
@@ -58,12 +59,14 @@ tableextension 50109 "Ext. Cliente Actividad" extends Customer
             Caption = 'Localización Chile. Dígito verificador';
             NotBlank = true;
             DataClassification = ToBeClassified;
-
+            Editable = false;
             trigger OnValidate()
             var
                 ValidarRut: Codeunit ValidarDigitoVerificador;
             begin
-                ValidarRut.ValidarDigitoVerificador(Rec.Rut_Cliente, DV);
+                //ValidarRut.ValidarDigitoVerificador(Rec.Rut_Cliente, DV);
+                ValidarRUT.VerificarRUT(Rec.Rut_Cliente);
+                if (DV <> ValidarRUT.CalcularDigitoVerificador(Rec.Rut_Cliente)) then Error('El dígito verificador ingresado es inválido.');
             end;
         }
         field(51000; RewardPoints; Integer)

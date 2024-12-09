@@ -19,7 +19,6 @@ pageextension 50125 "Page Ext. Cliente" extends "Customer Card"
                 Caption = 'Dígito verificador';
                 ToolTip = 'Localización Chilena. Dígito verificador de RUT';
                 ApplicationArea = All;
-
             }
 
             field(codigo_Actividad; Rec.codigo_Actividad)
