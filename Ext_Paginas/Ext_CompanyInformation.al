@@ -7,16 +7,16 @@ pageextension 50101 "Company Details" extends "Company Information"
             field("RUT Company"; Rec."Rut Company")
             {
                 ApplicationArea = All;
-                ToolTip = 'Ingresar Rut sin puntos y con Guión';
-                Caption = 'Rut Empresa';
+                ToolTip = 'Ingresar Rut sin puntos y con guión';
+                Caption = 'Rut empresa';
                 NotBlank = true;
                 ShowMandatory = true;
             }
             field("Comuna"; Rec.County)
             {
                 ApplicationArea = All;
-                ToolTip = 'County';
-                Caption = 'County';
+                ToolTip = 'Localización Chilena. Comuna';
+                Caption = 'Comuna';
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     ItemRec: Record "Post Code";
