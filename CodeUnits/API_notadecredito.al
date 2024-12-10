@@ -330,6 +330,7 @@ codeunit 50119 "HaulmerAPI Notadecredito"
                         //  Convertir el texto del PDF a un blob
                         SalesInvoiceHeader."Nota Credito PDF".CreateOutStream(OutStream);
                         OutStream.WriteText(Base64);
+                        SalesInvoiceHeader."envio/anulación" := 'A'; // Anulación
                         SalesInvoiceHeader.Modify();
                         // Modify the SalesHeader to save the changes
                         //Obtener el SalesHeader

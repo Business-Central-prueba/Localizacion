@@ -175,6 +175,11 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                     ConfirmSend: Boolean;
                     DTEcode: text[20];
                 begin
+                    if Rec."envio/anulación" = 'E' then begin
+                        Message('La factura ya ha sido enviada al Servicio de Impuestos Internos.');
+                        exit;
+                    end;
+
                     ConfirmSend := Confirm('¿Realmente desea emitir factura?', false);
                     if ConfirmSend then begin
                         if Rec.DTE = uppercase('Factura electrónica') then
@@ -247,6 +252,10 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                     ConfirmSend: Boolean;
                     CancelPstdSalesInvYesNo: Codeunit "Cancel PstdSalesInv (Yes/No)";
                 begin
+                    if Rec."envio/anulación" = 'A' then begin
+                        Message('La factura ya ha sido anulada.');
+                        exit;
+                    end;
                     ConfirmSend := Confirm('¿Realmente desea cancelar la factura?', false);
                     if ConfirmSend then begin
                         // Ejecutar la lógica personalizada de cancelación
@@ -275,7 +284,7 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
             action("Descargar PDF")
             {
                 ApplicationArea = All;
-                Caption = 'Descargar PDF';
+                Caption = 'Descargar Factura Emitida';
                 Image = Download;
                 Visible = false;
                 trigger OnAction()
@@ -287,6 +296,10 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                     Base64Text: Text;
                     Base64Convert: Codeunit "Base64 Convert";
                 begin
+                    if Rec."envio/anulación" <> 'E' then begin
+                        Message('La factura no ha sido enviada al Servicio de Impuestos Internos, por lo que el PDF no ha sido generado aún.');
+                        exit;
+                    end;
                     if Rec."Blob PDF".HasValue() then begin
                         // Crear el flujo de entrada desde el campo Blob
                         Rec."Blob PDF".CreateInStream(InStream, TEXTENCODING::UTF8);
@@ -303,7 +316,7 @@ pageextension 50133 "extend sales invoice posted" extends "Posted Sales Invoice"
                         Clear(OutStream);
                         Clear(TempBlob);
                     end else
-                        Message('El documento PDF no está disponible.');
+                        Message('El documento de factura emitida en PDF no está disponible.');
                 end;
             }
         }

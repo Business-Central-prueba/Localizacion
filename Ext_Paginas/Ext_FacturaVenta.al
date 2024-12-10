@@ -231,6 +231,10 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                     ConfirmSend: Boolean;
                     DTEcode: text[20];
                 begin
+                    if Rec."envio/anulación" = 'E' then begin
+                        Message('La factura ya ha sido enviada al Servicio de Impuestos Internos.');
+                        exit;
+                    end;
                     ConfirmSend := Confirm('¿Realmente desea emitir factura?', false);
                     if ConfirmSend then begin
                         if Rec.DTE = uppercase('Factura electrónica') then
@@ -333,6 +337,10 @@ pageextension 50128 "Page Ext. Folio Venta" extends "Sales Invoice"
                     Base64Text: Text;
                     Base64Convert: Codeunit "Base64 Convert";
                 begin
+                    if Rec."envio/anulación" <> 'E' then begin
+                        Message('La factura no ha sido enviada al Servicio de Impuestos Internos, por lo que el PDF no ha sido generado aún.');
+                        exit;
+                    end;
                     if Rec."Blob PDF".HasValue() then begin
                         // Crear el flujo de entrada desde el campo Blob
                         Rec."Blob PDF".CreateInStream(InStream, TEXTENCODING::UTF8);

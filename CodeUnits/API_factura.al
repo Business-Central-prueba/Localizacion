@@ -335,8 +335,7 @@ codeunit 50113 "HaulmerAPI Factura"
                             // OutStream para el campo Blob PDF
                             SalesHeader."Blob PDF".CreateOutStream(OutStream);
                             OutStream.WriteText(Base64);
-
-                            // Modify the SalesHeader to save the changes
+                            SalesHeader."envio/anulación" := 'E'; // Envio
                             SalesHeader.Modify();
                             // Mostrar mensaje de éxito al guardar el PDF
                             Message('El PDF generado se ha almacenado exitosamente en la factura de venta.');
