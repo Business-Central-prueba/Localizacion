@@ -38,6 +38,8 @@ tableextension 50107 "Ext. Proveedor Actividad" extends Vendor
                 ValidarRUT: Codeunit ValidarDigitoVerificador;
             begin
                 ValidarRUT.VerificarRUT(RUT);
+                Rec.DV := ValidarRUT.CalcularDigitoVerificador(RUT); // Asignar el DV calculado
+
             end;
         }
 
@@ -46,12 +48,14 @@ tableextension 50107 "Ext. Proveedor Actividad" extends Vendor
             Caption = 'Dígito verificador';
             NotBlank = true;
             DataClassification = ToBeClassified;
+            Editable = false;
 
             trigger OnValidate()
             var
                 ValidarRut: Codeunit ValidarDigitoVerificador;
             begin
-                ValidarRut.ValidarDigitoVerificador(Rec.RUT, DV);
+                ValidarRUT.VerificarRUT(Rec.RUT);
+                if (DV <> ValidarRUT.CalcularDigitoVerificador(Rec.RUT)) then Error('El dígito verificador ingresado es inválido.');
             end;
         }
     }

@@ -1,6 +1,4 @@
-
 // Verificar bien si el ID no está utilizado por otra entidad
-
 tableextension 50109 "Ext. Cliente Actividad" extends Customer
 {
     fields

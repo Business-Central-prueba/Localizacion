@@ -69,5 +69,10 @@ pageextension 50125 "Page Ext. Cliente" extends "Customer Card"
         }
 
     }
+    trigger OnClosePage()
+    var
+    begin
+        Rec.TestField(Rut_Cliente);
+    end;
 
 }

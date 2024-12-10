@@ -25,5 +25,11 @@ pageextension 50129 "Page Ext. Rut Empelado" extends "Employee Card"
     {
 
     }
+    trigger OnClosePage()
+    var
+    begin
+        Rec.TestField(RUT);
+    end;
+
 
 }
