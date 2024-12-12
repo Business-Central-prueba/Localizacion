@@ -109,15 +109,14 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                         Rec.DTE := ItemRec.Tipo;
                         if (Rec.DTE = 'BOLETA DE HONORARIOS ELECT.') or (Rec.DTE = 'Boleta de honorarios elect.') then begin
                             esBoletaHonorarios := true;
-                            //CurrPage.Update(false);
+                            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(true);
+                            CurrPage.Update(true);
                         end
                         else begin
                             esBoletaHonorarios := false;
+                            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(false);
+                            CurrPage.Update(true);
                         end;
-                        /*
-                        Rec.Modify(true);
-                       */
-                        //CurrPage.Update(false);
                     end;
 
                 end;

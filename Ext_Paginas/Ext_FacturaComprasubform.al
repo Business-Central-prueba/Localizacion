@@ -35,7 +35,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             field("Monto liquido"; Rec."Monto Liquido")
             {
                 ApplicationArea = Basic, Suite;
-
+                Visible = EsBoletaHonorarios;
                 trigger OnValidate()
                 var
                     directUnitCost: Decimal;
@@ -56,6 +56,23 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             }
 
         }
+        // Modificar el campo Quantity basado en EsBoletaHonorarios, quitar  el message
+
+        modify(Quantity)
+        {
+            trigger OnAfterValidate()
+            begin
+                Message('El valor de EsBoletaHonorarios es: %1', EsBoletaHonorarios);
+                if EsBoletaHonorarios then begin
+                    Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
+                    Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
+                    Rec."No." := '1'; // Asignar el valor "1" al campo "No." pero esto debiese ser dinamico 
+                    Rec."Description" := 'HONORARIOS';
+                end
+            end;
+        }
+
+
 
         // Asegúrate de que el nuevo campo se agregue en el mismo grupo que los campos existentes
         addlast(Control15) // Este es el grupo donde están los campos existentes
@@ -98,5 +115,49 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
 
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        if EsBoletaHonorarios then begin
+            Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
+            Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
+            Rec."No." := '1'; // Asignar el valor "1" al campo "No." pero esto debiese ser dinamico 
+            Rec."Description" := 'HONORARIOS';
+
+        end;
+    end;
+
+    trigger OnOpenPage()
+    begin
+        // Mostrar un mensaje con el valor actual de EsBoletaHonorarios
+        Message('El valor de EsBoletaHonorarios es: %1', EsBoletaHonorarios);
+        /*
+        // Modificar la primera línea si es necesario
+        if EsBoletaHonorarios then begin
+            Rec."Monto Liquido" := 1; // Modificar el valor de Monto Liquido según sea necesario
+            Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
+            Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
+            Rec."No." := '1'; // Asignar el valor "1" al campo "No."
+            Rec."Description" := 'HONORARIOS';
+            
+    end;
+*/
+    end;
+
+    //metodo que toma el dte y lo asigna a variable local para trabajarlo
+    procedure SetEsBoletaHonorarios(Value: Boolean)
+    begin
+        EsBoletaHonorarios := Value;
+        if EsBoletaHonorarios then begin
+            Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
+            Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
+            Rec."No." := '1'; // Asignar el valor "1" al campo "No."
+            Rec."Description" := 'HONORARIOS';
+        end;
+    end;
+
+
+    var
+        EsBoletaHonorarios: Boolean;
 
 }
