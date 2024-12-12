@@ -12,6 +12,11 @@ tableextension 50321 Ext_T_Purchase extends "Purchase Line"
             Caption = 'N';
 
         }
+        field(55102; "Monto Liquido"; integer)
+        {
+            Caption = 'Monto Liquido';
+
+        }
 
     }
 }
