@@ -1,4 +1,4 @@
-page 50850 "Descarga PDF"
+/*page 50850 "Descarga PDF"
 {
     PageType = CardPart;
     UsageCategory = Administration;
@@ -13,5 +13,6 @@ page 50850 "Descarga PDF"
                 visible = true;
             }
         }
+        
     }
-}
+}*/

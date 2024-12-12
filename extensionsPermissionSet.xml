@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PermissionSets>
-  <PermissionSet RoleID="BUSINESS CENTRAL LOCALIZACIÓN CHILE" RoleName="Business Central Localización Chile">
+  <PermissionSet RoleID="LOC KIS CL" RoleName="LOC KIS CL">
     <Permission>
       <ObjectID>50160</ObjectID>
       <ObjectType>0</ObjectType>

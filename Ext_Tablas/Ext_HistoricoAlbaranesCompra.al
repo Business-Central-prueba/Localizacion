@@ -3,14 +3,14 @@ tableextension 50132 "Ext. His. Alabaranes Compra" extends "Purch. Rcpt. Header"
     fields
     {
 
-        field(70004; Folio; Integer)
+        field(50770; Folio; Integer)
         {
             Caption = 'Folio';
             DataClassification = ToBeClassified;
             Editable = false;
         }
 
-        field(70005; codigoActividad; Code[200])
+        field(50778; codigoActividad; Code[200])
         {
             Caption = 'Actividad Economica';
             DataClassification = ToBeClassified;
@@ -18,7 +18,7 @@ tableextension 50132 "Ext. His. Alabaranes Compra" extends "Purch. Rcpt. Header"
             Editable = false;
         }
 
-        field(70006; Transportista; Code[50])
+        field(50781; Transportista; Code[60])
         {
             Caption = 'Forma de Entrega';
             DataClassification = ToBeClassified;
@@ -27,21 +27,21 @@ tableextension 50132 "Ext. His. Alabaranes Compra" extends "Purch. Rcpt. Header"
         }
 
 
-        field(70009; DV; Code[1])
+        field(50782; DV; Code[1])
         {
             Caption = 'Dígito verificador';
             DataClassification = ToBeClassified;
             Editable = false;
         }
 
-        field(70010; rut_Transportista; Integer)
+        field(50783; rut_Transportista; Integer)
         {
             Caption = 'RUT Transportista';
             DataClassification = ToBeClassified;
             Editable = false;
         }
 
-        field(70000; patenteTransportista; Text[6])
+        field(50780; patenteTransportista; Text[6])
         {
             Caption = 'Patente Transportista';
             DataClassification = ToBeClassified;

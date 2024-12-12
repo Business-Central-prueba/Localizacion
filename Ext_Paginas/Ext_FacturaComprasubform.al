@@ -6,6 +6,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
     {
         modify("Direct Unit Cost")
         {
+            Editable = false;
             trigger OnAfterValidate()
             var
                 directUnitCost: Decimal;
@@ -15,8 +16,9 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             begin
                 // Verificar si el DTE es igual a "boletahonorario"
                 //if Rec."DTE" = 'boletahonorario' then begin // Asegúrate de que "DTE" sea el nombre correcto del campo
-                directUnitCost := Rec."Direct Unit Cost"; // Obtener el nuevo valor de "Direct Unit Cost"
-                vatPercentage := Rec."VAT %"; // Asegúrate de que "VAT %" sea el nombre correcto del campo
+                directUnitCost := Rec."Monto Liquido"; // Obtener el nuevo valor de "Direct Unit Cost"
+                //vatPercentage := Rec."VAT %"; // Asegúrate de que "VAT %" sea el nombre correcto del campo
+                vatPercentage := 13.75; // Asegúrate de que "VAT %" sea el nombre correcto del campo
                 // Llamar al codeunit para realizar la lógica adicional
                 boletaHonorario.CalculateRetention(
                     directUnitCost,
@@ -28,6 +30,33 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             //end;
         }
 
+        addafter("Location Code")
+        {
+            field("Monto liquido"; Rec."Monto Liquido")
+            {
+                ApplicationArea = Basic, Suite;
+
+                trigger OnValidate()
+                var
+                    directUnitCost: Decimal;
+                    vatPercentage: Decimal;
+                    boletaHonorario: Codeunit 50110;
+                    PurchaseHeader: Record "Purchase Header";
+                begin
+                    directUnitCost := Rec."Monto Liquido"; // Obtener el nuevo valor de "Direct Unit Cost"               
+                    vatPercentage := 13.75; // Asegúrate de que "VAT %" sea el nombre correcto del campo
+                    boletaHonorario.CalculateRetention(
+                    directUnitCost,
+                    Rec."Retención",
+                    Rec."Retención + base",
+                    vatPercentage
+                    );
+                    Rec."Direct Unit Cost" := Rec."Retención + base";
+                end;
+            }
+
+        }
+
         // Asegúrate de que el nuevo campo se agregue en el mismo grupo que los campos existentes
         addlast(Control15) // Este es el grupo donde están los campos existentes
         {
@@ -37,7 +66,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 Caption = 'Retención'; // Cambia el nombre del campo según sea necesario
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
                 Editable = false; // Permitir edición
-                Visible = false;
+                Visible = true;
                 // Puedes agregar más propiedades según sea necesario
             }
             field(REtencionplusbase; rec."Retención + base")
@@ -46,7 +75,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 Caption = 'Retención incl.';
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
                 Editable = false;
-                Visible = false;
+                Visible = true;
 
                 // Lógica para calcular el valor
                 trigger OnValidate()
@@ -63,8 +92,8 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 ApplicationArea = Basic, Suite;
                 Caption = '% Impuesto retenido';
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
-                Editable = false; // Permitir edición
-                Visible = false;
+                Editable = false;
+                Visible = true;
             }
 
         }

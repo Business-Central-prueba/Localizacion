@@ -64,5 +64,11 @@ pageextension 50126 "Page Ext. Porveedor" extends "Vendor Card"
     {
 
     }
+    trigger OnClosePage()
+    var
+    begin
+        Rec.TestField(RUT);
+    end;
+
 
 }

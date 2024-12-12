@@ -1,14 +1,38 @@
 // CodeUnits/Cod50111.CodeunitpurchpostExt.al
 codeunit 50322 CustomPurchPostHandler
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', false, false)]
-    local procedure OnAfterPostPurchLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; CommitIsSupressed: Boolean; var PurchInvLine: Record "Purch. Inv. Line"; var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PurchLineACY: Record "Purchase Line"; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; SrcCode: Code[10]; xPurchaseLine: Record "Purchase Line")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostInvoice', '', false, false)]
+    local procedure OnBeforePostInvoice(var PurchHeader: Record "Purchase Header"; PreviewMode: Boolean; CommitIsSupressed: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean; var Window: Dialog; HideProgressWindow: Boolean; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; var InvoicePostingInterface: Interface "Invoice Posting"; var InvoicePostingParameters: Record "Invoice Posting Parameters"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; GenJnlLineDocType: Enum "Gen. Journal Document Type"; SrcCode: Code[10])
+
     var
-        AllocationLine: Record "Allocation Line";
+        CalculeRetention: Codeunit "Boleta_honorario";
+        RetencionPlusBase: Integer;
+        RetencionPorcentaje: Decimal;
+        Retencion: Integer;
     begin
-        //AllocationLine.Amount := PurchaseLine."Retención + base";
-        /*Message('OnAfterPostPurchLine');
-        Message('Monto base: ' + Format(AllocationLine.Amount));*/
+        // Inicializar porcentaje de retención
+        //RetencionPorcentaje := 13.75;
+
+        // Mostrar el monto actual de la línea
+        //Message('Monto actual de la línea: %1', Format(TotalPurchLine.Amount));
+
+        //CalculeRetention.CalculateRetention(TotalPurchLine.Amount, Retencion, RetencionPlusBase, RetencionPorcentaje);
+        //TotalPurchLine.Amount := RetencionPlusBase;
+        //Message('Nuevo monto con retención aplicado: %1', Format(TotalPurchLine.Amount));
+        //TotalPurchLine.Validate(Amount, RetencionPlusBase);
+        //TotalPurchLine.Modify();
+        //Message('Nuevo monto con retención aplicado: %1', Format(TotalPurchLine.Amount));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Allocation Account Mgt.", 'OnGenerateFixedAllocationLinesOnAfterInsertAllocationLine', '', false, false)]
+    local procedure OnGenerateFixedAllocationLinesOnAfterInsertAllocationLine(var AllocationLine: Record "Allocation Line"; var AllocAccountDistibution: Record "Alloc. Account Distribution")
+    var
+    // PurchaseLine: Record "Purchase Line";
+
+    begin
+        // Message('P Line N°: ' + Format(PurchaseLine."No."));
+        // Message('P Line Retencion: ' + Format(PurchaseLine."Retención + base"));
+        // Message('ALL ACC Amount: ' + Format(AllocationLine.Amount));
     end;
     /*
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', false, false)]
@@ -72,12 +96,13 @@ codeunit 50322 CustomPurchPostHandler
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeModifyTempLine', '', false, false)]
     local procedure OnBeforeModifyTempLine(var TempPurchaseLine: Record "Purchase Line" temporary)
     var
-        AllocationLine: Record "Allocation Line";
+    // AllocationLine: Record "Allocation Line";
     begin
         /*AllocationLine.Amount := TempPurchaseLine."Retención + base";
         Message('OnBeforeModifyTempLine');
         Message('Monto base: ' + Format(TempPurchaseLine."Direct Unit Cost"));
         Message('Monto total: ' + Format(TempPurchaseLine."Retención + base"));
         Message('Monto total IVA: ' + Format(TempPurchaseLine."Amount Including VAT"));*/
+
     end;
 }

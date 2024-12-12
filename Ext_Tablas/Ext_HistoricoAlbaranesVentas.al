@@ -35,7 +35,7 @@ tableextension 50130 "Ext. His. Alabaranes Venta" extends "Sales Shipment Header
             DataClassification = ToBeClassified;
         }
 
-        field(50781; patenteTransportista; Text[6])
+        field(50782; patenteTransportista; Text[6])
         {
             Caption = 'Patente Transportista';
             DataClassification = ToBeClassified;
