@@ -140,43 +140,34 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
     }
 
     trigger OnAfterGetRecord()
+    var
+        AllocationAccountRec: Record "Allocation Account";
     begin
         if EsBoletaHonorarios then begin
-            Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
-            Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
-            Rec."No." := '1'; // Asignar el valor "1" al campo "No." pero esto debiese ser dinamico 
-            Rec."Description" := 'HONORARIOS';
+            Rec.Validate("Quantity", 1); // Modificar el valor de Quantity según sea necesario
+            Rec.Validate(Type, Rec.Type::"Allocation Account");
+            //Rec.Validate("No.", '02'); //buscar la allocation account dinamicamente
 
+
+            // Buscar la cuenta de asignación que contiene el string "PRUEBA"
+            if AllocationAccountRec.FindFirst() then begin
+                if AllocationAccountRec.Name.Contains('Prueba') then begin
+                    Rec.Validate("No.", AllocationAccountRec."No.");
+                end else begin
+                    // Manejar el caso en que no se encuentra la cuenta de asignación
+                    Error('No se encontró una cuenta de asignación que contenga "Prueba".');
+                end;
+            end else begin
+                // Manejar el caso en que no se encuentra ningún registro
+                Error('No se encontraron cuentas de asignación.');
+            end;
         end;
     end;
 
-    trigger OnOpenPage()
-    begin
-        // Mostrar un mensaje con el valor actual de EsBoletaHonorarios
-        Message('El valor de EsBoletaHonorarios es: %1', EsBoletaHonorarios);
-        /*
-        // Modificar la primera línea si es necesario
-        if EsBoletaHonorarios then begin
-            Rec."Monto Liquido" := 1; // Modificar el valor de Monto Liquido según sea necesario
-            Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
-            Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
-            Rec."No." := '1'; // Asignar el valor "1" al campo "No."
-            Rec."Description" := 'HONORARIOS';
-            
-    end;
-*/
-    end;
-
-    //metodo que toma el dte y lo asigna a variable local para trabajarlo
+    //metodo que toma el DTE y lo asigna a variable local para trabajarlo
     procedure SetEsBoletaHonorarios(Value: Boolean)
     begin
         EsBoletaHonorarios := Value;
-        if EsBoletaHonorarios then begin
-            Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
-            Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
-            Rec."No." := '1'; // Asignar el valor "1" al campo "No."
-            Rec."Description" := 'HONORARIOS';
-        end;
     end;
 
 
