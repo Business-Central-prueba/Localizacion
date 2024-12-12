@@ -81,8 +81,8 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             }
 
         }
-        // Modificar el campo Quantity basado en EsBoletaHonorarios, quitar  el message
-
+        //esto solo se dispara al modificar el quantity
+        /*
         modify(Quantity)
         {
             trigger OnAfterValidate()
@@ -96,7 +96,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 end
             end;
         }
-
+        */
 
 
         addlast(Control15) // Este es el grupo donde están los campos existentes
@@ -144,23 +144,20 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
         AllocationAccountRec: Record "Allocation Account";
     begin
         if EsBoletaHonorarios then begin
-            Rec.Validate("Quantity", 1); // Modificar el valor de Quantity según sea necesario
+
             Rec.Validate(Type, Rec.Type::"Allocation Account");
-            //Rec.Validate("No.", '02'); //buscar la allocation account dinamicamente
-
-
             // Buscar la cuenta de asignación que contiene el string "PRUEBA"
             if AllocationAccountRec.FindFirst() then begin
                 if AllocationAccountRec.Name.Contains('Prueba') then begin
                     Rec.Validate("No.", AllocationAccountRec."No.");
                 end else begin
-                    // Manejar el caso en que no se encuentra la cuenta de asignación
                     Error('No se encontró una cuenta de asignación que contenga "Prueba".');
                 end;
             end else begin
-                // Manejar el caso en que no se encuentra ningún registro
                 Error('No se encontraron cuentas de asignación.');
             end;
+            //Rec.Validate("Quantity", 1); 
+            Rec.Quantity := 1;
         end;
     end;
 
