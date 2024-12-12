@@ -176,9 +176,6 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                     Caption = 'Sucursal';
                     Visible = not esBoletaHonorarios;
                 }
-
-
-
             }
 
         }
