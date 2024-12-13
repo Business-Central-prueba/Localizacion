@@ -20,26 +20,26 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
         modify("Document Date")
         {
             Editable = not esBoletaHonorarios;
-            Visible = not esBoletaHonorarios;
+            //Visible = not esBoletaHonorarios;
 
         }
 
         modify("Posting Date")
         {
             Editable = not esBoletaHonorarios;
-            Visible = not esBoletaHonorarios;
+            //Visible = not esBoletaHonorarios;
 
         }
         modify("VAT reporting Date")
         {
             Editable = not esBoletaHonorarios;
-            Visible = not esBoletaHonorarios;
+            //Visible = not esBoletaHonorarios;
 
         }
         modify("Due Date")
         {
             Editable = not esBoletaHonorarios;
-            Visible = not esBoletaHonorarios;
+            //Visible = not esBoletaHonorarios;
 
         }
 
@@ -97,7 +97,7 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                 ApplicationArea = All;
                 ToolTip = 'Localización Chilena. Documento Tributario Electrónico (DTE)';
                 Caption = 'DTE';
-                //                Visible = false;
+                //              Visible = false;
                 //              Enabled = false;
                 //ShowMandatory = true;
                 trigger OnLookup(var Text: Text): Boolean
@@ -206,7 +206,13 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
     trigger OnOpenPage()
 
     begin
-        esBoletaHonorarios := false;
+        if (UpperCase(Rec.DTE) = 'BOLETA DE HONORARIOS ELECT.') then begin
+            esBoletaHonorarios := true;
+            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(true);
+            CurrPage.Update(true);
+        end else begin
+            esBoletaHonorarios := false;
+        end;
         mostrarTransportistas := true;
 
     end;

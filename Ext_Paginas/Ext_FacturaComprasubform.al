@@ -6,8 +6,8 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
     {
         modify("Direct Unit Cost")
         {
-            Editable = false;
-            trigger OnAfterValidate()
+            Editable = not EsBoletaHonorarios;
+            /*trigger OnAfterValidate()
             var
                 directUnitCost: Decimal;
                 vatPercentage: Decimal;
@@ -26,7 +26,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                     Rec."Retención + base",
                     vatPercentage
                 );
-            end;
+            end;*/
             //end;
         }
 
@@ -48,19 +48,19 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                     AllocationLine: Record "Allocation Line";
                     GLAccount: Record "G/L Account";
                 begin
-                    Message(PurchaseHeader.DTE);
+                    //Message(PurchaseHeader.DTE);
                     montoLiquido := Rec."Monto Liquido"; // Obtener el valor de "Monto líquido"               
                     if (Rec.Type = Rec.Type::"Allocation Account") then begin
                         Allocation.Get(Rec."No.");
 
                         AllocationDist.SetRange(AllocationDist."Allocation Account No.", Allocation."No.");
 
-                        Message('ALL ACC Number: ' + Format(Allocation."No.") + 'Nombre: ' + Format(Allocation.Name));
+                        //Message('ALL ACC Number: ' + Format(Allocation."No.") + 'Nombre: ' + Format(Allocation.Name));
                         if AllocationDist.FindSet() then
                             repeat
                                 GLAccount.Get(AllocationDist."Destination Account Number");
-                                Message('ALL DIST Number: ' + Format(AllocationDist."Allocation Account No.") + 'Destination: ' + Format(AllocationDist."Destination Account Number") +
-                                'Percentage' + Format(AllocationDist.Percent) + 'Name: ' + Format(GLAccount.Name));
+                                //Message('ALL DIST Number: ' + Format(AllocationDist."Allocation Account No.") + 'Destination: ' + Format(AllocationDist."Destination Account Number") +
+                                //'Percentage' + Format(AllocationDist.Percent) + 'Name: ' + Format(GLAccount.Name));
 
                                 if (UpperCase(GLAccount.Name).Contains('RETENCIÓN') or UpperCase(GLAccount.Name).Contains('RETENCION')) then begin
                                     retencionPercentage := AllocationDist.Percent;
@@ -75,6 +75,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                         );
                         Rec.Validate("Direct Unit Cost", Rec."Retención + base"); // Asigna RetencionBase a Direct unit
                         Rec.Validate("Quantity", 1);
+
                         DeltaUpdateTotals(); //Actualiza los totales
                     end;
                 end;
@@ -116,15 +117,6 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 ToolTip = 'This is a new field added to the Purch. Invoice Subform.';
                 Editable = false;
                 Visible = true;
-
-                // Lógica para calcular el valor
-                trigger OnValidate()
-                var
-                    directUnitCost: Decimal;
-                begin
-                    directUnitCost := rec."Direct Unit Cost"; // Obtener el valor de "Direct Unit Cost"
-                    //rec."Retención + base" := directUnitCost + 1;
-                end;
             }
 
             field(vatPercentage; Rec."VAT %")
@@ -157,7 +149,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                 Error('No se encontraron cuentas de asignación.');
             end;
             //Rec.Validate("Quantity", 1); 
-            Rec.Quantity := 1;
+            //Rec.Quantity := 1;
         end;
     end;
 
@@ -165,6 +157,17 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
     procedure SetEsBoletaHonorarios(Value: Boolean)
     begin
         EsBoletaHonorarios := Value;
+        if not EsBoletaHonorarios then begin
+            //Message('Que xd');
+            Rec.Validate(Rec."Monto Liquido", 0);
+            Rec.Validate(Rec."Direct Unit Cost", 0);
+            Rec.Validate(Rec."Retención + base", 0);
+            Rec.Validate(Rec."Retención", 0);
+            //Message(Format(Rec."Monto Liquido"));
+            //Message(Format(Rec."Direct Unit Cost"));
+            //Message(Format(Rec."Retención + base"));
+            CurrPage.Update(true);
+        end;
     end;
 
 
