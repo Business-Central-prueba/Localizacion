@@ -29,6 +29,40 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             end;*/
             //end;
         }
+        modify("Location code")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+
+        modify("Unit of Measure Code")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+
+        modify("Item Reference No.")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+        modify("Line Discount %")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+        modify("Shortcut Dimension 1 Code")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+        modify("Shortcut Dimension 2 Code")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+        modify("Gen. Bus. Posting Group")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
+        modify("VAT Bus. Posting Group")
+        {
+            Visible = not EsBoletaHonorarios;
+        }
 
         addafter("Location Code")
         {
@@ -165,28 +199,28 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
     }
 
 
-    /*
-        trigger OnAfterGetRecord()
-        var
-            AllocationAccountRec: Record "Allocation Account";
-        begin
-            if EsBoletaHonorarios then begin
 
-                Rec.Validate(Type, Rec.Type::"Allocation Account");
-                // Buscar la cuenta de asignación que contiene el string "PRUEBA"
-                if AllocationAccountRec.FindFirst() then begin
-                    if AllocationAccountRec.Name.Contains('Prueba') then begin
-                        Rec.Validate("No.", AllocationAccountRec."No.");
-                    end else begin
-                        Error('No se encontró una cuenta de asignación que contenga "Prueba".');
-                    end;
+    trigger OnAfterGetRecord()
+    var
+        AllocationAccountRec: Record "Allocation Account";
+    begin
+        if EsBoletaHonorarios then begin
+
+            Rec.Validate(Type, Rec.Type::"Allocation Account");
+            // Buscar la cuenta de asignación que contiene el string "PRUEBA"
+            if AllocationAccountRec.FindFirst() then begin
+                if AllocationAccountRec.Name.Contains('Prueba') then begin
+                    Rec.Validate("No.", AllocationAccountRec."No.");
                 end else begin
-                    Error('No se encontraron cuentas de asignación.');
+                    Error('No se encontró una cuenta de asignación que contenga "Prueba".');
                 end;
-                Rec.Validate("Quantity", 1);
-                //Rec.Quantity := 1;
+            end else begin
+                Error('No se encontraron cuentas de asignación.');
             end;
-        end;*/
+            //Rec.Validate("Quantity", 1);
+            //Rec.Quantity := 1;
+        end;
+    end;
 
     //metodo que toma el DTE y lo asigna a variable local para trabajarlo
     procedure SetEsBoletaHonorarios(Value: Boolean; Picked: Boolean)
@@ -216,7 +250,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             Rec.Validate(Type, Rec.Type::"Allocation Account");
             // Buscar la cuenta de asignación que contiene el string "PRUEBA"
             if AllocationAccountRec.FindFirst() then begin
-                if AllocationAccountRec.Name.Contains('Prueba') then begin
+                if AllocationAccountRec.Name.Contains('Honorarios') then begin
                     Rec.Validate("No.", AllocationAccountRec."No.");
                 end else begin
                     Error('No se encontró una cuenta de asignación que contenga "Prueba".');
