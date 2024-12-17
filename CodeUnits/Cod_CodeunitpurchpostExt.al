@@ -95,47 +95,50 @@ codeunit 50322 CustomPurchPostHandler
 
     end;
 
-
     procedure ValidatePurchaseLines(PurchHeader: Record "Purchase Header"; IsHonorariumReceipt: Boolean)
     var
         PurchLine: Record "Purchase Line";
+        AllocationAccountRec: Record "Allocation Account";
         AllocAccount: Record "Alloc. Account Distribution";
         HasValidAllocation: Boolean;
     begin
         if not IsHonorariumReceipt then
             exit; // No es Boleta de Honorarios, no validar
 
+        // Validar que solo haya una línea en caso de Boleta de Honorarios
+
         // Filtrar líneas del documento
         PurchLine.SetRange("Document Type", PurchHeader."Document Type");
         PurchLine.SetRange("Document No.", PurchHeader."No.");
 
+        if PurchLine.Count() > 1 then begin
+            Message('lineas:  %1 ', PurchLine.Count());
+            Error('Para tipo de DTE: Boleta de Honorarios, solo agregue una linea. ');
+        end;
+
         if PurchLine.FindSet() then begin
             repeat
-                // Imprimir información de la línea para depuración
-                /*
-                Message('Línea %1: Tipo: %2, Artículo/Cuenta: %3, Nº Servicio: %4, Descripción: %5, Es Boleta: %6',
-                        PurchLine."Line No.", // Línea actual
-                        PurchLine."Type",    // Tipo de línea (Articulo, Cuenta, etc.)
-                        PurchLine."No.",     // Artículo o cuenta asignada
-                                             //PurchLine."", // Número de servicio (si aplica)
-                        PurchLine.Description); // Descripción
-                                                //PurchLine.); // Si es boleta de honorarios (check)
-                                                // Validar si tiene tipo de cuenta asignada
-                                                */
                 if PurchLine.Type = PurchLine.Type::"Allocation Account" then begin
-                    AllocAccount.SetRange("Allocation Account No.", PurchLine."No.");
-                    AllocAccount.SetRange(esBoletaHonorario, true);
-                    // Imprimir detalles de las cuentas asignadas
-                    if AllocAccount.FindSet() then begin
+                    AllocationAccountRec.SetRange("No.", PurchLine."No.");
+
+                    // Validar si el nombre contiene "NOMBRE CUENTA"
+                    if AllocationAccountRec.FindSet() then begin
                         repeat
-                        /*Message('Cuenta asignada: %1, Es Retención: %2',
-                                AllocAccount."Allocation Account No.", // Número de cuenta asignada
-                                AllocAccount.esBoletaHonorario); // Valor de esBoletaHonorario (true/false)*/
-                        until AllocAccount.Next() = 0;
+                            if ((AllocationAccountRec.Name) = 'Cta. Prueba') then begin
+                                // Buscar cuentas en Alloc. Account Distribution asociadas
+                                AllocAccount.SetRange("Allocation Account No.", AllocationAccountRec."No.");
+                                AllocAccount.SetRange(esBoletaHonorario, true);
 
-                        HasValidAllocation := true;
+                                if AllocAccount.FindFirst() then begin
+                                    HasValidAllocation := true;
+                                    Break;
+                                end;
+                            end;
+                        until AllocationAccountRec.Next() = 0;
+
+                        if HasValidAllocation then
+                            Break;
                     end;
-
                 end;
             until PurchLine.Next() = 0;
 

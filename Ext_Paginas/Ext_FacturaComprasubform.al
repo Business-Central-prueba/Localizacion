@@ -197,39 +197,45 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             Visible = not EsBoletaHonorarios;
         }
     }
-
-    trigger OnNewRecord(BelowxRec: Boolean)
-    var
-        PurchaseLineRec: Record "Purchase Line";
-    begin
-        if EsBoletaHonorarios then begin
-            // Validar si ya existe una línea en el documento actual
-            PurchaseLineRec.SetRange("Document Type", Rec."Document Type");
-            PurchaseLineRec.SetRange("Document No.", Rec."Document No.");
-            if PurchaseLineRec.FindFirst() then begin
-                Message('No debe crear más de un servicio por boleta de honorario.');
-                CurrPage.Update(false);
-                //CurrPage.SetSelectionFilter(PurchaseLineRec); // Redirigir al primer registro
+    /*
+        trigger OnNewRecord(BelowxRec: Boolean)
+        var
+            PurchaseLineRec: Record "Purchase Line";
+        begin
+            if EsBoletaHonorarios then begin
+                // Validar si ya existe una línea en el documento actual
+                PurchaseLineRec.SetRange("Document Type", Rec."Document Type");
+                PurchaseLineRec.SetRange("Document No.", Rec."Document No.");
+                if PurchaseLineRec.FindFirst() then begin
+                    Message('No debe crear más de un servicio por boleta de honorario.');
+                    CurrPage.Update(false);
+                    //CurrPage.SetSelectionFilter(PurchaseLineRec); // Redirigir al primer registro
+                end;
             end;
         end;
-    end;
+    */
+
 
     trigger OnAfterGetRecord()
     var
         AllocationAccountRec: Record "Allocation Account";
     begin
         if EsBoletaHonorarios then begin
-
             Rec.Validate(Type, Rec.Type::"Allocation Account");
-            // Buscar la cuenta de asignación que contiene el string "PRUEBA"
-            if AllocationAccountRec.FindFirst() then begin
-                if AllocationAccountRec.Name.Contains('Prueba') then begin
-                    Rec.Validate("No.", AllocationAccountRec."No.");
-                end else begin
-                    Error('No se encontró una cuenta de asignación que contenga "Prueba".');
-                end;
+            // Buscar todas las cuentas de asignación que contengan "Prueba" en el nombre
+            if AllocationAccountRec.FindSet() then begin
+                repeat
+                    if ((AllocationAccountRec.Name) = 'Cta. Prueba') then begin
+                        Rec.Validate("No.", AllocationAccountRec."No.");
+                        break; // Sale del ciclo si encuentra una cuenta válida
+                    end;
+                until AllocationAccountRec.Next() = 0;
+
+                // Si no se encontró ninguna cuenta válida, mostrar error
+                if AllocationAccountRec.Next() = 0 then
+                    Message('No se encontró una cuenta de asignación que contenga "Cta. Prueba".');
             end else begin
-                Error('No se encontraron cuentas de asignación.');
+                Message('No se encontraron cuentas de asignación.');
             end;
             //Rec.Validate("Quantity", 1);
             //Rec.Quantity := 1;
@@ -262,20 +268,29 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
         EsBoletaHonorarios := Value;
         if (EsBoletaHonorarios) then begin
             Rec.Validate(Type, Rec.Type::"Allocation Account");
-            // Buscar la cuenta de asignación que contiene el string "PRUEBA"
-            if AllocationAccountRec.FindFirst() then begin
-                if AllocationAccountRec.Name.Contains('Honorarios') then begin
-                    Rec.Validate("No.", AllocationAccountRec."No.");
-                end else begin
-                    Error('No se encontró una cuenta de asignación que contenga "Prueba".');
-                end;
+
+            // Buscar todas las cuentas de asignación que cumplen con el filtro
+            if AllocationAccountRec.FindSet() then begin
+                repeat
+                    // Comprobar si el nombre de la cuenta contiene "Honorarios"
+                    if AllocationAccountRec.Name.Contains('Honorarios') or AllocationAccountRec.Name.Contains('HONORARIOS') then begin
+                        Rec.Validate("No.", AllocationAccountRec."No.");
+                        break; // Sale del ciclo si encuentra una cuenta válida
+                    end;
+                until AllocationAccountRec.Next() = 0;
+
+                // Si no se encontró ninguna cuenta válida, mostrar un error
+                if AllocationAccountRec.Next() = 0 then
+                    Error('No se encontró una cuenta de asignación que contenga "Honorarios".');
             end else begin
                 Error('No se encontraron cuentas de asignación.');
             end;
+
+            // Establecer la cantidad de la línea
             Rec.Validate("Quantity", 1);
-            //Rec.Quantity := 1;
         end;
     end;
+
 
 
     var
