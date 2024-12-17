@@ -117,9 +117,20 @@ pageextension 50134 "extend purchase invoice posted" extends "Posted Purchase In
             }
 
         }
-
-
-
     }
+
+    trigger OnOpenPage()
+
+    begin
+        if (UpperCase(Rec.DTE) = 'BOLETA DE HONORARIOS ELECT.') then begin
+            esBoletaHonorarios := true;
+            CurrPage.PurchInvLines.PAGE.SetEsBoletaHonorarios(true, false);
+        end else begin
+            esBoletaHonorarios := false;
+        end;
+    end;
+
+    var
+        esBoletaHonorarios: Boolean;
 }
 

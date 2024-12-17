@@ -14,7 +14,13 @@ tableextension 50321 Ext_T_Purchase extends "Purchase Line"
         }
         field(55102; "Monto Liquido"; integer)
         {
-            Caption = 'Monto Liquido';
+            Caption = 'Localización Chilena. Monto líquido para boleta de honorarios.';
+
+        }
+
+        field(55103; "Retención %"; Decimal)
+        {
+            Caption = 'Localización Chilena. Porcentaje de retención.';
 
         }
 

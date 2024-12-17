@@ -45,7 +45,6 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
 
         addfirst(General)
         {
-
             field(Folio; Rec.Folio)
             {
                 ApplicationArea = All;
@@ -97,9 +96,7 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                 ApplicationArea = All;
                 ToolTip = 'Localización Chilena. Documento Tributario Electrónico (DTE)';
                 Caption = 'DTE';
-                //              Visible = false;
-                //              Enabled = false;
-                //ShowMandatory = true;
+
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     ItemRec: Record tipoDocumentos;
@@ -109,12 +106,12 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                         Rec.DTE := ItemRec.Tipo;
                         if (Rec.DTE = 'BOLETA DE HONORARIOS ELECT.') or (Rec.DTE = 'Boleta de honorarios elect.') then begin
                             esBoletaHonorarios := true;
-                            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(true);
+                            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(true, true);
                             CurrPage.Update(true);
                         end
                         else begin
                             esBoletaHonorarios := false;
-                            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(false);
+                            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(false, true);
                             CurrPage.Update(true);
                         end;
                     end;
@@ -208,7 +205,7 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
     begin
         if (UpperCase(Rec.DTE) = 'BOLETA DE HONORARIOS ELECT.') then begin
             esBoletaHonorarios := true;
-            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(true);
+            CurrPage.PurchLines.PAGE.SetEsBoletaHonorarios(true, false);
             CurrPage.Update(true);
         end else begin
             esBoletaHonorarios := false;
