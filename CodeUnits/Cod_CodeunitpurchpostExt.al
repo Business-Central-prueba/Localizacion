@@ -4,24 +4,13 @@ codeunit 50322 CustomPurchPostHandler
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostInvoice', '', false, false)]
     local procedure OnBeforePostInvoice(var PurchHeader: Record "Purchase Header"; PreviewMode: Boolean; CommitIsSupressed: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean; var Window: Dialog; HideProgressWindow: Boolean; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; var InvoicePostingInterface: Interface "Invoice Posting"; var InvoicePostingParameters: Record "Invoice Posting Parameters"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; GenJnlLineDocType: Enum "Gen. Journal Document Type"; SrcCode: Code[10])
 
-    var
-        CalculeRetention: Codeunit "Boleta_honorario";
-        RetencionPlusBase: Integer;
-        RetencionPorcentaje: Decimal;
-        Retencion: Integer;
     begin
-        // Inicializar porcentaje de retención
-        //RetencionPorcentaje := 13.75;
-
-        // Mostrar el monto actual de la línea
-        //Message('Monto actual de la línea: %1', Format(TotalPurchLine.Amount));
-
-        //CalculeRetention.CalculateRetention(TotalPurchLine.Amount, Retencion, RetencionPlusBase, RetencionPorcentaje);
-        //TotalPurchLine.Amount := RetencionPlusBase;
-        //Message('Nuevo monto con retención aplicado: %1', Format(TotalPurchLine.Amount));
-        //TotalPurchLine.Validate(Amount, RetencionPlusBase);
-        //TotalPurchLine.Modify();
-        //Message('Nuevo monto con retención aplicado: %1', Format(TotalPurchLine.Amount));
+        Message('Retencion y base: ' + Format(TotalPurchLine."Retención + base"));
+        Message('Retencion y base header: ' + Format(PurchHeader."Retención + base"));
+        /*PurchHeader."Monto Liquido" := TotalPurchLine."Monto Liquido";
+        PurchHeader."Retención" := TotalPurchLine."Retención";
+        PurchHeader."Retención %" := TotalPurchLine."Retención %";
+        PurchHeader."Retención + base" := TotalPurchLine."Retención + base";*/
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Allocation Account Mgt.", 'OnGenerateFixedAllocationLinesOnAfterInsertAllocationLine', '', false, false)]

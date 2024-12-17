@@ -38,7 +38,7 @@ pageextension 50667 Ext_H_FacturaCompra_subform extends "Posted Purch. Invoice S
             group("Boleta Honorarios")
             {
                 Visible = EsBoletaHonorarios;
-                field(Probando; Rec."Monto Liquido")
+                field(MontoLiquido; Rec."Monto Liquido")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Monto líquido';
@@ -84,6 +84,11 @@ pageextension 50667 Ext_H_FacturaCompra_subform extends "Posted Purch. Invoice S
             Visible = not EsBoletaHonorarios;
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        Message('Retencion: ' + Format(Rec."Retención"));
+    end;
 
     procedure SetEsBoletaHonorarios(Value: Boolean; Picked: Boolean)
     begin
