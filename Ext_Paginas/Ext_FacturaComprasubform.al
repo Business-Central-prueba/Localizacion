@@ -198,7 +198,19 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
         }
     }
 
-
+    trigger OnNewRecord(BelowxRec: Boolean)
+    var
+        PurchaseLineRec: Record "Purchase Line";
+    begin
+        // Validar si ya existe una línea en el documento actual
+        PurchaseLineRec.SetRange("Document Type", Rec."Document Type");
+        PurchaseLineRec.SetRange("Document No.", Rec."Document No.");
+        if PurchaseLineRec.FindFirst() then begin
+            Message('No debe crear más de un servicio por boleta de honorario.');
+            CurrPage.Update(false);
+            CurrPage.SetSelectionFilter(PurchaseLineRec); // Redirigir al primer registro
+        end;
+    end;
 
     trigger OnAfterGetRecord()
     var
