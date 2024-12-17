@@ -219,26 +219,22 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
     trigger OnAfterGetRecord()
     var
         AllocationAccountRec: Record "Allocation Account";
+        ValidAccount: Record "Allocation Account";
+        PurchInvoiceValidation: Codeunit "CustomPurchPostHandler";
+
     begin
         if EsBoletaHonorarios then begin
             Rec.Validate(Type, Rec.Type::"Allocation Account");
-            // Buscar todas las cuentas de asignación que contengan "Prueba" en el nombre
-            if AllocationAccountRec.FindSet() then begin
-                repeat
-                    if ((AllocationAccountRec.Name) = 'Cta. Prueba') then begin
-                        Rec.Validate("No.", AllocationAccountRec."No.");
-                        break; // Sale del ciclo si encuentra una cuenta válida
-                    end;
-                until AllocationAccountRec.Next() = 0;
+            // Obtener la cuenta válida utilizando el procedimiento
+            ValidAccount := PurchInvoiceValidation.ObtenerCtaAsignacionBoleta();
 
-                // Si no se encontró ninguna cuenta válida, mostrar error
-                if AllocationAccountRec.Next() = 0 then
-                    Message('No se encontró una cuenta de asignación que contenga "Cta. Prueba".');
-            end else begin
-                Message('No se encontraron cuentas de asignación.');
+            if ValidAccount.IsEmpty() then begin
+                Message('No se encontró ninguna cuenta de asignación válida con "esBoletaHonorario" marcado.');
+                //exit; // Salir si no hay cuentas válidas
             end;
-            //Rec.Validate("Quantity", 1);
-            //Rec.Quantity := 1;
+            if not ValidAccount.IsEmpty() then begin
+                Rec.Validate("No.", ValidAccount."No.");
+            end;
         end;
     end;
 

@@ -95,59 +95,70 @@ codeunit 50322 CustomPurchPostHandler
 
     end;
 
+
+
+
     procedure ValidatePurchaseLines(PurchHeader: Record "Purchase Header"; IsHonorariumReceipt: Boolean)
     var
         PurchLine: Record "Purchase Line";
         AllocationAccountRec: Record "Allocation Account";
         AllocAccount: Record "Alloc. Account Distribution";
         HasValidAllocation: Boolean;
+        ValidAccount: Record "Allocation Account";
+
     begin
         if not IsHonorariumReceipt then
             exit; // No es Boleta de Honorarios, no validar
 
         // Validar que solo haya una línea en caso de Boleta de Honorarios
-
-        // Filtrar líneas del documento
         PurchLine.SetRange("Document Type", PurchHeader."Document Type");
         PurchLine.SetRange("Document No.", PurchHeader."No.");
 
         if PurchLine.Count() > 1 then begin
-            Message('lineas:  %1 ', PurchLine.Count());
-            Error('Para tipo de DTE: Boleta de Honorarios, solo agregue una linea. ');
+            Error('Lineas:  %1 Para tipo de DTE: Boleta de Honorarios, solo agregue una linea. ', PurchLine.Count());
         end;
 
+        ValidAccount := ObtenerCtaAsignacionBoleta();
+        // Validar que la cuenta no sea vacía
+        if ValidAccount.IsEmpty() then
+            Error('Debe configurar al menos una cuenta asignada con "Cta. Retención" para este documento.');
+
+
+        // Validar que la línea de tipo "Allocation Account" utilice la cuenta válida
         if PurchLine.FindSet() then begin
             repeat
                 if PurchLine.Type = PurchLine.Type::"Allocation Account" then begin
-                    AllocationAccountRec.SetRange("No.", PurchLine."No.");
-
-                    // Validar si el nombre contiene "NOMBRE CUENTA"
-                    if AllocationAccountRec.FindSet() then begin
-                        repeat
-                            if ((AllocationAccountRec.Name) = 'Cta. Prueba') then begin
-                                // Buscar cuentas en Alloc. Account Distribution asociadas
-                                AllocAccount.SetRange("Allocation Account No.", AllocationAccountRec."No.");
-                                AllocAccount.SetRange(esBoletaHonorario, true);
-
-                                if AllocAccount.FindFirst() then begin
-                                    HasValidAllocation := true;
-                                    Break;
-                                end;
-                            end;
-                        until AllocationAccountRec.Next() = 0;
-
-                        if HasValidAllocation then
-                            Break;
-                    end;
+                    if PurchLine."No." <> ValidAccount."No." then
+                        Error('La línea debe utilizar la cuenta de asignación válida: %1.', ValidAccount.Name);
                 end;
             until PurchLine.Next() = 0;
-
-            // Si no hay asignación válida, mostrar error
-            if not HasValidAllocation then
-                Error('Debe configurar al menos una cuenta asignada con "Cta. Retención" para este documento.');
         end else
             Error('El documento no tiene líneas.'); // Mensaje adicional si no hay líneas
     end;
 
 
+    procedure ObtenerCtaAsignacionBoleta(): Record "Allocation Account"
+    var
+        AllocationAccountRec: Record "Allocation Account";
+        AllocAccount: Record "Alloc. Account Distribution";
+    begin
+        // Limpiar los filtros de Allocation Account
+        AllocationAccountRec.Reset();
+
+        // Buscar cuentas de asignación válidas
+        if AllocationAccountRec.FindSet() then begin
+            repeat
+                // Buscar en la tabla "Alloc. Account Distribution" cuentas relacionadas con esBoletaHonorario = true
+                AllocAccount.SetRange("Allocation Account No.", AllocationAccountRec."No.");
+                AllocAccount.SetRange(esBoletaHonorario, true);
+
+                if AllocAccount.FindFirst() then
+                    exit(AllocationAccountRec); // Devuelve la primera cuenta encontrada
+            until AllocationAccountRec.Next() = 0;
+        end;
+
+        // Si no se encontró ninguna cuenta válida, devuelve un registro vacío
+        Clear(AllocationAccountRec);
+        exit(AllocationAccountRec);
+    end;
 }
