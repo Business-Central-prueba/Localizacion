@@ -116,6 +116,32 @@ tableextension 50103 ExtensionPurchaseInvoiceHeader extends "Purch. Inv. Header"
             ObsoleteState = Removed;
             ObsoleteReason = 'Problemas con el tipo de valor';
         }
+
+        field(55100; "Retención + base"; integer)
+        {
+            Caption = 'N';
+            DataClassification = ToBeClassified;
+        }
+        field(55101; "Retención"; integer)
+        {
+            Caption = 'N';
+            DataClassification = ToBeClassified;
+
+        }
+        field(55102; "Monto Liquido"; integer)
+        {
+            Caption = 'Localización Chilena. Monto líquido para boleta de honorarios.';
+            DataClassification = ToBeClassified;
+
+        }
+
+        field(55103; "Retención %"; Decimal)
+        {
+            Caption = 'Localización Chilena. Porcentaje de retención.';
+            DecimalPlaces = 0 : 5;
+            DataClassification = ToBeClassified;
+
+        }
         /*
         modify("Sell-to Customer Name")//--Cuando se haga un cambio dentro de una field (Sell-to Customer Name), se gatillará esta función para cambiar el valor de la actividad económica
         {
