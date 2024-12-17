@@ -6,7 +6,7 @@ codeunit 50322 CustomPurchPostHandler
 
     begin
         Message('Retencion y base: ' + Format(TotalPurchLine."Retención + base"));
-        Message('Retencion y base header: ' + Format(PurchHeader."Retención + base"));
+        //Message('Retencion y base header: ' + Format(PurchHeader."Retención + base"));
         /*PurchHeader."Monto Liquido" := TotalPurchLine."Monto Liquido";
         PurchHeader."Retención" := TotalPurchLine."Retención";
         PurchHeader."Retención %" := TotalPurchLine."Retención %";
@@ -94,4 +94,57 @@ codeunit 50322 CustomPurchPostHandler
         Message('Monto total IVA: ' + Format(TempPurchaseLine."Amount Including VAT"));*/
 
     end;
+
+
+    procedure ValidatePurchaseLines(PurchHeader: Record "Purchase Header"; IsHonorariumReceipt: Boolean)
+    var
+        PurchLine: Record "Purchase Line";
+        AllocAccount: Record "Alloc. Account Distribution";
+        HasValidAllocation: Boolean;
+    begin
+        if not IsHonorariumReceipt then
+            exit; // No es Boleta de Honorarios, no validar
+
+        // Filtrar líneas del documento
+        PurchLine.SetRange("Document Type", PurchHeader."Document Type");
+        PurchLine.SetRange("Document No.", PurchHeader."No.");
+
+        if PurchLine.FindSet() then begin
+            repeat
+                // Imprimir información de la línea para depuración
+                /*
+                Message('Línea %1: Tipo: %2, Artículo/Cuenta: %3, Nº Servicio: %4, Descripción: %5, Es Boleta: %6',
+                        PurchLine."Line No.", // Línea actual
+                        PurchLine."Type",    // Tipo de línea (Articulo, Cuenta, etc.)
+                        PurchLine."No.",     // Artículo o cuenta asignada
+                                             //PurchLine."", // Número de servicio (si aplica)
+                        PurchLine.Description); // Descripción
+                                                //PurchLine.); // Si es boleta de honorarios (check)
+                                                // Validar si tiene tipo de cuenta asignada
+                                                */
+                if PurchLine.Type = PurchLine.Type::"Allocation Account" then begin
+                    AllocAccount.SetRange("Allocation Account No.", PurchLine."No.");
+                    AllocAccount.SetRange(esBoletaHonorario, true);
+                    // Imprimir detalles de las cuentas asignadas
+                    if AllocAccount.FindSet() then begin
+                        repeat
+                        /*Message('Cuenta asignada: %1, Es Retención: %2',
+                                AllocAccount."Allocation Account No.", // Número de cuenta asignada
+                                AllocAccount.esBoletaHonorario); // Valor de esBoletaHonorario (true/false)*/
+                        until AllocAccount.Next() = 0;
+
+                        HasValidAllocation := true;
+                    end;
+
+                end;
+            until PurchLine.Next() = 0;
+
+            // Si no hay asignación válida, mostrar error
+            if not HasValidAllocation then
+                Error('Debe configurar al menos una cuenta asignada con "Cta. Retención" para este documento.');
+        end else
+            Error('El documento no tiene líneas.'); // Mensaje adicional si no hay líneas
+    end;
+
+
 }

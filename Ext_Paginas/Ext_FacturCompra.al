@@ -179,6 +179,25 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
 
     actions
     {
+        modify(Preview)
+        {
+            trigger OnBeforeAction()
+            var
+                PurchInvoiceValidation: Codeunit "CustomPurchPostHandler";
+            begin
+                PurchInvoiceValidation.ValidatePurchaseLines(Rec, esBoletaHonorarios);
+            end;
+        }
+
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                PurchInvoiceValidation: Codeunit "CustomPurchPostHandler";
+            begin
+                PurchInvoiceValidation.ValidatePurchaseLines(Rec, esBoletaHonorarios);
+            end;
+        }
 
         addfirst(Processing)
         {
@@ -199,6 +218,7 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                 end;
             }
         }
+
     }
     trigger OnOpenPage()
 
