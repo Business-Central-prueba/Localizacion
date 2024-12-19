@@ -118,6 +118,10 @@ codeunit 50322 CustomPurchPostHandler
         end;
 
         ValidAccount := ObtenerCtaAsignacionBoleta();
+        //validar que el porcentaje que estoy recibiendo desde el record sea el mismo definido en la cuenta de honorarios
+        if (PurchHeader."Retención %" <> ObtenerPorcentajeRetencion()) then
+            Error('El porcentaje de retención cambió a %1, reingrese monto líquido para reflejar los cambios.', ObtenerPorcentajeRetencion());
+
         // Validar que la cuenta no sea vacía
         if ValidAccount.IsEmpty() then
             Error('Debe configurar al menos una cuenta asignada con "Cta. Retención" para este documento.');
@@ -133,6 +137,9 @@ codeunit 50322 CustomPurchPostHandler
             until PurchLine.Next() = 0;
         end else
             Error('El documento no tiene líneas.'); // Mensaje adicional si no hay líneas
+
+
+
     end;
 
 
@@ -161,26 +168,44 @@ codeunit 50322 CustomPurchPostHandler
         exit(AllocationAccountRec);
     end;
 
-    procedure PostPurchaseInvoice(var PurchInvHeader: Record "Purchase Header"; var PostedPurchInvHeader: Record "Purch. Inv. Header")
-    begin
-        // Copiar campos custom desde Purchase Invoice a Posted Purchase Invoice
-        PostedPurchInvHeader."Retención + base" := PurchInvHeader."Retención + base";
-        PostedPurchInvHeader."Retención" := PurchInvHeader."Retención";
-        PostedPurchInvHeader."Monto Liquido" := PurchInvHeader."Monto Liquido";
-        PostedPurchInvHeader."Retención %" := PurchInvHeader."Retención %";
-    end;
 
-    procedure PostInvoice(PurchInvHeader: Record "Purchase Header")
+
+
+
+    procedure ObtenerPorcentajeRetencion(): Decimal
     var
-        PostedPurchInvHeader: Record "Purch. Inv. Header";
-        CustomPurchPostHandler: Codeunit "CustomPurchPostHandler";
+        AllocAccount: Record "Alloc. Account Distribution";
     begin
-
-        PostedPurchInvHeader.Init();
-        PostedPurchInvHeader."No." := '1'; // Asignar un número de documento posteado
-        CustomPurchPostHandler.PostPurchaseInvoice(PurchInvHeader, PostedPurchInvHeader);
-        PostedPurchInvHeader.Insert();
+        AllocAccount.Reset();
+        AllocAccount.SetRange(esBoletaHonorario, true);
+        if AllocAccount.FindFirst() then
+            exit(AllocAccount.Percent); // Devuelve el porcentaje de retención
+        exit(0);
     end;
 
 
+    /*
+        procedure PostPurchaseInvoice(var PurchInvHeader: Record "Purchase Header"; var PostedPurchInvHeader: Record "Purch. Inv. Header")
+        begin
+            // Copiar campos custom desde Purchase Invoice a Posted Purchase Invoice
+            PostedPurchInvHeader."Retención + base" := PurchInvHeader."Retención + base";
+            PostedPurchInvHeader."Retención" := PurchInvHeader."Retención";
+            PostedPurchInvHeader."Monto Liquido" := PurchInvHeader."Monto Liquido";
+            PostedPurchInvHeader."Retención %" := PurchInvHeader."Retención %";
+        end;
+    */
+    /*
+        procedure PostInvoice(PurchInvHeader: Record "Purchase Header")
+        var
+            PostedPurchInvHeader: Record "Purch. Inv. Header";
+            CustomPurchPostHandler: Codeunit "CustomPurchPostHandler";
+        begin
+
+            PostedPurchInvHeader.Init();
+            PostedPurchInvHeader."No." := '1'; // Asignar un número de documento posteado
+            CustomPurchPostHandler.PostPurchaseInvoice(PurchInvHeader, PostedPurchInvHeader);
+            PostedPurchInvHeader.Insert();
+        end;
+
+    */
 }

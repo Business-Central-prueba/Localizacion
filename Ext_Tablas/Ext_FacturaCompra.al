@@ -73,7 +73,6 @@ tableextension 50127 "Folio Compra" extends "Purchase Header"
             TableRelation = actividadEconomica;
         }
 
-
         field(50782; DV; Code[1])
         {
             Caption = 'Dígito verificador';
@@ -105,8 +104,6 @@ tableextension 50127 "Folio Compra" extends "Purchase Header"
             DataClassification = ToBeClassified;
         }
 
-
-
         field(50777; Transportista; Code[10])//--------Obsoleto
         {
             Caption = 'Localización Chile. Forma de Entrega';
@@ -116,7 +113,6 @@ tableextension 50127 "Folio Compra" extends "Purchase Header"
             ObsoleteReason = 'Largo insuficiente';
         }
 
-
         field(50779; rutTransportista; Text[12])//--Obsoleto
         {
             Caption = 'Rut Transportista';
@@ -124,7 +120,6 @@ tableextension 50127 "Folio Compra" extends "Purchase Header"
             ObsoleteState = Removed;
             ObsoleteReason = 'Problemas con el tipo de valor';
         }
-
 
         modify("Buy-from Vendor Name")
         {
@@ -148,8 +143,8 @@ tableextension 50127 "Folio Compra" extends "Purchase Header"
         {
             Caption = 'N';
             DataClassification = ToBeClassified;
-
         }
+
         field(55102; "Monto Liquido"; integer)
         {
             Caption = 'Localización Chilena. Monto líquido para boleta de honorarios.';
@@ -162,7 +157,6 @@ tableextension 50127 "Folio Compra" extends "Purchase Header"
             Caption = 'Localización Chilena. Porcentaje de retención.';
             DecimalPlaces = 0 : 5;
             DataClassification = ToBeClassified;
-
         }
 
     }
