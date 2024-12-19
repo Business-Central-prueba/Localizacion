@@ -3,9 +3,10 @@ pageextension 50667 Ext_H_FacturaCompra_subform extends "Posted Purch. Invoice S
 
     // Agregar un nuevo campo en el grupo existente
     layout
-    {
+    { /*
         modify("Direct Unit Cost")
         {
+           
             trigger OnAfterValidate()
             var
                 directUnitCost: Decimal;
@@ -28,8 +29,9 @@ pageextension 50667 Ext_H_FacturaCompra_subform extends "Posted Purch. Invoice S
                 );
             end;
             //end;
-        }
-
+           
+    }
+ */
         // Asegúrate de que el nuevo campo se agregue en el mismo grupo que los campos existentes
 
 
@@ -37,7 +39,7 @@ pageextension 50667 Ext_H_FacturaCompra_subform extends "Posted Purch. Invoice S
         {
             group("Boleta Honorarios")
             {
-                Visible = EsBoletaHonorarios;
+                Visible = false;
                 field(MontoLiquido; Rec."Monto Liquido")
                 {
                     ApplicationArea = Basic, Suite;
@@ -84,12 +86,12 @@ pageextension 50667 Ext_H_FacturaCompra_subform extends "Posted Purch. Invoice S
             Visible = not EsBoletaHonorarios;
         }
     }
-
-    trigger OnAfterGetCurrRecord()
-    begin
-        Message('Retencion: ' + Format(Rec."Retención"));
-    end;
-
+    /*
+        trigger OnAfterGetCurrRecord()
+        begin
+            Message('Retencion: ' + Format(Rec."Retención"));
+        end;
+    */
     procedure SetEsBoletaHonorarios(Value: Boolean; Picked: Boolean)
     begin
         EsBoletaHonorarios := Value;

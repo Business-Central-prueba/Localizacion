@@ -63,6 +63,10 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
         {
             Visible = not EsBoletaHonorarios;
         }
+        modify("Quantity")
+        {
+            Editable = not EsBoletaHonorarios;
+        }
 
         addafter("Location Code")
         {
@@ -78,6 +82,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                     retencionPercentage: Decimal;
                     boletaHonorario: Codeunit 50110;
                     PurchaseHeader: Record "Purchase Header";
+                    PurchHeader: Record "Purchase Header"; //para probar historicos 
                     Allocation: Record "Allocation Account";
                     AllocationDist: Record "Alloc. Account Distribution";
 
@@ -121,70 +126,73 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
                         Rec.Validate("Retención %", retencionPercentage);
                         Rec.Validate("Direct Unit Cost", Rec."Retención + base"); // Asigna RetencionBase a Direct unit
                         Rec.Validate("Quantity", 1);
-                        DeltaUpdateTotals(); //Actualiza los totales
+                        //seccion para revisar paso a historico 
+                        if Rec."Document Type" = Rec."Document Type"::Invoice then begin
+                            PurchHeader.Get(Rec."Document Type", Rec."Document No.");
+                            PurchHeader.Validate("Monto Liquido", Rec."Monto Liquido");
+                            PurchHeader.Validate("Retención", Rec."Retención");
+                            PurchHeader.Validate("Retención %", Rec."Retención %");
+                            PurchHeader.Validate("Retención + base", Rec."Retención + base");
+                            PurchHeader.Modify(true);
+                        end;
+                        //fin seccion
+                        //DeltaUpdateTotals(); //Actualiza los totales
                     end else begin
                         Message('Para el correcto funcionamiento del registro de Boletas de honorarios, el tipo de línea de compra debe asignarse como "Cuenta de asignación".');
                     end;
                 end;
+
+
             }
 
+
         }
-        //esto solo se dispara al modificar el quantity
-        /*
-        modify(Quantity)
-        {
-            trigger OnAfterValidate()
-            begin
-                Message('El valor de EsBoletaHonorarios es: %1', EsBoletaHonorarios);
-                if EsBoletaHonorarios then begin
-                    Rec.Quantity := 1; // Modificar el valor de Quantity según sea necesario
-                    Rec.Type := Rec.Type::"Allocation Account"; // Cambiar el tipo a "Cuenta de asignación"
-                    Rec."No." := '1'; // Asignar el valor "1" al campo "No." pero esto debiese ser dinamico 
-                    Rec."Description" := 'HONORARIOS';
-                end
-            end;
-        }
-        */
 
 
         addafter(Control15)
         {
             group("Boleta Honorarios")
             {
-                Visible = EsBoletaHonorarios;
-                field(Probando; Rec."Monto Liquido")
+                Visible = false;
+                group("")
                 {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Monto líquido';
-                    ToolTip = 'Localización Chilena. Monto líquido.';
-                    Editable = false;
-                }
-                field(REtencion; rec."Retención")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Retención'; // Cambia el nombre del campo según sea necesario
-                    ToolTip = 'Localización Chilena. Monto de retención.';
-                    Editable = false; // Permitir edición
-                    Visible = true;
-                }
-                field(REtencionplusbase; rec."Retención + base")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Retención incl.';
-                    ToolTip = 'Localización Chilena. Monto bruto. (Líquido + retención.)';
-                    Editable = false;
-                    Visible = true;
+
+                    field(Probando; Rec."Monto Liquido")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Monto líquido';
+                        ToolTip = 'Localización Chilena. Monto líquido.';
+                        Editable = false;
+                    }
+                    field(REtencion; rec."Retención")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Retención'; // Cambia el nombre del campo según sea necesario
+                        ToolTip = 'Localización Chilena. Monto de retención.';
+                        Editable = false; // Permitir edición
+                        Visible = true;
+                    }
+                    field(REtencionplusbase; rec."Retención + base")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Retención incl.';
+                        ToolTip = 'Localización Chilena. Monto bruto. (Líquido + retención.)';
+                        Editable = false;
+                        Visible = true;
+                    }
+
+                    field(vatPercentage; Rec."Retención %")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = '% Impuesto retenido';
+                        ToolTip = 'Localización Chilena. Porcentaje de retención.';
+                        DecimalPlaces = 0 : 5;
+                        Editable = false;
+                        Visible = true;
+                    }
+
                 }
 
-                field(vatPercentage; Rec."Retención %")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = '% Impuesto retenido';
-                    ToolTip = 'Localización Chilena. Porcentaje de retención.';
-                    DecimalPlaces = 0 : 5;
-                    Editable = false;
-                    Visible = true;
-                }
             }
         }
 
@@ -197,23 +205,6 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             Visible = not EsBoletaHonorarios;
         }
     }
-    /*
-        trigger OnNewRecord(BelowxRec: Boolean)
-        var
-            PurchaseLineRec: Record "Purchase Line";
-        begin
-            if EsBoletaHonorarios then begin
-                // Validar si ya existe una línea en el documento actual
-                PurchaseLineRec.SetRange("Document Type", Rec."Document Type");
-                PurchaseLineRec.SetRange("Document No.", Rec."Document No.");
-                if PurchaseLineRec.FindFirst() then begin
-                    Message('No debe crear más de un servicio por boleta de honorario.');
-                    CurrPage.Update(false);
-                    //CurrPage.SetSelectionFilter(PurchaseLineRec); // Redirigir al primer registro
-                end;
-            end;
-        end;
-    */
 
 
     trigger OnAfterGetRecord()
@@ -238,10 +229,12 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
         end;
     end;
 
+
     //metodo que toma el DTE y lo asigna a variable local para trabajarlo
     procedure SetEsBoletaHonorarios(Value: Boolean; Picked: Boolean)
     begin
         EsBoletaHonorarios := Value;
+        /*
         if not EsBoletaHonorarios then begin
             Rec.Validate(Rec."Monto Liquido", 0);
             Rec.Validate(Rec."Direct Unit Cost", 0);
@@ -255,39 +248,8 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             end;
             CurrPage.Update(true);
         end;
+        */
     end;
-
-    procedure setBoletaLineType(Value: Boolean)
-    var
-        AllocationAccountRec: Record "Allocation Account";
-    begin
-        EsBoletaHonorarios := Value;
-        if (EsBoletaHonorarios) then begin
-            Rec.Validate(Type, Rec.Type::"Allocation Account");
-
-            // Buscar todas las cuentas de asignación que cumplen con el filtro
-            if AllocationAccountRec.FindSet() then begin
-                repeat
-                    // Comprobar si el nombre de la cuenta contiene "Honorarios"
-                    if AllocationAccountRec.Name.Contains('Honorarios') or AllocationAccountRec.Name.Contains('HONORARIOS') then begin
-                        Rec.Validate("No.", AllocationAccountRec."No.");
-                        break; // Sale del ciclo si encuentra una cuenta válida
-                    end;
-                until AllocationAccountRec.Next() = 0;
-
-                // Si no se encontró ninguna cuenta válida, mostrar un error
-                if AllocationAccountRec.Next() = 0 then
-                    Error('No se encontró una cuenta de asignación que contenga "Honorarios".');
-            end else begin
-                Error('No se encontraron cuentas de asignación.');
-            end;
-
-            // Establecer la cantidad de la línea
-            Rec.Validate("Quantity", 1);
-        end;
-    end;
-
-
 
     var
         EsBoletaHonorarios: Boolean;

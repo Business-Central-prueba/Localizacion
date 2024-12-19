@@ -43,6 +43,7 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
 
         }
 
+
         addfirst(General)
         {
             field(Folio; Rec.Folio)
@@ -121,6 +122,7 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
             }
 
 
+
         }
 
         addlast(General)
@@ -174,6 +176,59 @@ pageextension 50127 "Page Ext. Folio Compra" extends "Purchase Invoice"
                 }
             }
 
+        }
+
+        addbefore("Invoice Details")
+        {
+            group("Boleta de Honorarios")
+            {
+                Visible = esBoletaHonorarios;
+                group("")
+                {
+                    field(RetencionPlusBase; Rec."Retención + base")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Retención incl.';
+                        ToolTip = 'Localización Chilena. Monto bruto. (Líquido + retención.)';
+                        Editable = false;
+                    }
+                    field(Retencion; Rec."Retención")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Retención'; // Cambia el nombre del campo según sea necesario
+                        ToolTip = 'Localización Chilena. Monto de retención.';
+                        Editable = false; // Permitir edición
+
+                    }
+                    field(MontoLiquido; Rec."Monto Liquido")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Monto líquido';
+                        ToolTip = 'Localización Chilena. Monto líquido.';
+                        Editable = false;
+                        trigger OnValidate()
+                        var
+                            PurchLine: Record "Purchase Line";
+                        begin
+                            if PurchLine.Get(Rec."No.") then begin
+                                PurchLine.SetRange("Document No.", Rec."No.");
+                                PurchLine.ModifyAll("Monto Liquido", Rec."Monto Liquido");
+                                PurchLine.ModifyAll("Retención", Rec."Retención");
+                                PurchLine.ModifyAll("Retención %", Rec."Retención %");
+                                PurchLine.ModifyAll("Retención + base", Rec."Retención + base");
+                            end;
+                        end;
+                    }
+                    field(retencionPorc; Rec."Retención %")
+                    {
+                        ApplicationArea = All;
+                        Caption = '% Impuesto retenido';
+                        ToolTip = 'Localización Chilena. Porcentaje de retención.';
+                        DecimalPlaces = 0 : 5;
+                        Editable = false;
+                    }
+                }
+            }
         }
     }
 

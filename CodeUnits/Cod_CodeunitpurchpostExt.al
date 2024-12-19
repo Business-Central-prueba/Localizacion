@@ -5,7 +5,7 @@ codeunit 50322 CustomPurchPostHandler
     local procedure OnBeforePostInvoice(var PurchHeader: Record "Purchase Header"; PreviewMode: Boolean; CommitIsSupressed: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean; var Window: Dialog; HideProgressWindow: Boolean; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; var InvoicePostingInterface: Interface "Invoice Posting"; var InvoicePostingParameters: Record "Invoice Posting Parameters"; GenJnlLineDocNo: Code[20]; GenJnlLineExtDocNo: Code[35]; GenJnlLineDocType: Enum "Gen. Journal Document Type"; SrcCode: Code[10])
 
     begin
-        Message('Retencion y base: ' + Format(TotalPurchLine."Retención + base"));
+        //Message('Retencion y base: ' + Format(TotalPurchLine."Retención + base"));
         //Message('Retencion y base header: ' + Format(PurchHeader."Retención + base"));
         /*PurchHeader."Monto Liquido" := TotalPurchLine."Monto Liquido";
         PurchHeader."Retención" := TotalPurchLine."Retención";
@@ -97,7 +97,6 @@ codeunit 50322 CustomPurchPostHandler
 
 
 
-
     procedure ValidatePurchaseLines(PurchHeader: Record "Purchase Header"; IsHonorariumReceipt: Boolean)
     var
         PurchLine: Record "Purchase Line";
@@ -161,4 +160,27 @@ codeunit 50322 CustomPurchPostHandler
         Clear(AllocationAccountRec);
         exit(AllocationAccountRec);
     end;
+
+    procedure PostPurchaseInvoice(var PurchInvHeader: Record "Purchase Header"; var PostedPurchInvHeader: Record "Purch. Inv. Header")
+    begin
+        // Copiar campos custom desde Purchase Invoice a Posted Purchase Invoice
+        PostedPurchInvHeader."Retención + base" := PurchInvHeader."Retención + base";
+        PostedPurchInvHeader."Retención" := PurchInvHeader."Retención";
+        PostedPurchInvHeader."Monto Liquido" := PurchInvHeader."Monto Liquido";
+        PostedPurchInvHeader."Retención %" := PurchInvHeader."Retención %";
+    end;
+
+    procedure PostInvoice(PurchInvHeader: Record "Purchase Header")
+    var
+        PostedPurchInvHeader: Record "Purch. Inv. Header";
+        CustomPurchPostHandler: Codeunit "CustomPurchPostHandler";
+    begin
+
+        PostedPurchInvHeader.Init();
+        PostedPurchInvHeader."No." := '1'; // Asignar un número de documento posteado
+        CustomPurchPostHandler.PostPurchaseInvoice(PurchInvHeader, PostedPurchInvHeader);
+        PostedPurchInvHeader.Insert();
+    end;
+
+
 }

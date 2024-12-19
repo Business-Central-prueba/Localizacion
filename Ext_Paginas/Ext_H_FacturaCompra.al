@@ -69,55 +69,103 @@ pageextension 50134 "extend purchase invoice posted" extends "Posted Purchase In
                         Rec.DTE := ItemRec.Tipo;
                 end;
             }
+
         }
 
 
         addlast(General)
         {
-            field(Transportista; Rec.Transportista)
+            group(Transporte)
             {
-                ApplicationArea = All;
-                ToolTip = 'Localización Chilena. Transportista';
-                Caption = 'Escoger Transportista';
-                trigger OnLookup(var Text: Text): Boolean
-                var
-                    ItemRec: Record "Shipping Agent";
-                begin
-                    ItemRec.Reset();
-                    if Page.RunModal(Page::"Shipping Agents", ItemRec) = Action::LookupOK then
-                        Rec.Transportista := ItemRec.Name;
-                end;
-            }
+                Visible = not esBoletaHonorarios;
+                field(Transportista; Rec.Transportista)
+                {
 
-            field(rutTransportista; Rec.RUT_Transportista)
-            {
-                ApplicationArea = All;
-                ToolTip = 'Localización Chilena. RUT del transportista';
-                Caption = 'RUT Transportista';
-            }
+                    ApplicationArea = All;
+                    ToolTip = 'Localización Chilena. Transportista';
+                    Caption = 'Escoger Transportista';
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        ItemRec: Record "Shipping Agent";
+                    begin
+                        ItemRec.Reset();
+                        if Page.RunModal(Page::"Shipping Agents", ItemRec) = Action::LookupOK then
+                            Rec.Transportista := ItemRec.Name;
+                    end;
+                }
 
-            field(DV; Rec.DV)
-            {
-                ApplicationArea = All;
-                ToolTip = 'Localización Chilena. Dígito verificador del RUT del transportista';
-            }
+                field(rutTransportista; Rec.RUT_Transportista)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Localización Chilena. RUT del transportista';
+                    Caption = 'RUT Transportista';
+                }
 
-            field(patenteTransportista; Rec.patenteTransportista)
-            {
-                ApplicationArea = All;
-                ToolTip = 'Localización Chilena. Patente del transportista';
-                Caption = 'Patente transportista';
-            }
+                field(DV; Rec.DV)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Localización Chilena. Dígito verificador del RUT del transportista';
+                }
 
-            field(Sucursal; Rec.Sucursal)
-            {
-                ApplicationArea = All;
-                ToolTip = 'Localización Chilena. Sucursal';
-                Caption = 'Sucursal';
-            }
+                field(patenteTransportista; Rec.patenteTransportista)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Localización Chilena. Patente del transportista';
+                    Caption = 'Patente transportista';
+                }
 
+                field(Sucursal; Rec.Sucursal)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Localización Chilena. Sucursal';
+                    Caption = 'Sucursal';
+                }
+            }
         }
+
+        addbefore("Invoice Details")
+        {
+            group("Boleta de Honorarios")
+            {
+                Caption = 'Boleta de Honorarios';
+                Visible = EsBoletaHonorarios; // Usar la variable para condicionar la visibilidad del grupod
+                group("")
+                {
+                    field("Retención + base"; Rec."Retención + base")
+                    {
+                        ToolTip = 'Localización Chilena. Retención + base desde factura compra';
+                        Caption = 'Retención + Base';
+                        ApplicationArea = All;
+                    }
+
+                    field(Retencion; Rec."Retención")
+                    {
+                        ToolTip = 'Localización Chilena. Retención líquida desde factura compra';
+                        Caption = 'Retención';
+                        ApplicationArea = All;
+                    }
+                    field(MontoLiquido; Rec."Monto Liquido")
+                    {
+                        ToolTip = 'Localización Chilena. Monto líquido desde factura compra';
+                        Caption = 'Monto Líquido';
+                        ApplicationArea = all;
+                    }
+
+
+                    field("porcentaje"; Rec."Retención %")
+                    {
+                        ToolTip = 'Localización Chilena. Retención + base desde factura compra';
+                        Caption = 'Retención %';
+                        ApplicationArea = All;
+
+                    }
+
+                }
+            }
+        }
+
     }
+
 
     trigger OnOpenPage()
 
