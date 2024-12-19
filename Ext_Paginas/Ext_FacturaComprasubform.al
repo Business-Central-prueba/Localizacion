@@ -212,6 +212,7 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
         AllocationAccountRec: Record "Allocation Account";
         ValidAccount: Record "Allocation Account";
         PurchInvoiceValidation: Codeunit "CustomPurchPostHandler";
+        PurchHeader: Record "Purchase Header";
 
     begin
         if EsBoletaHonorarios then begin
@@ -225,6 +226,13 @@ pageextension 50666 Ext_FacturaCompra_subform extends "Purch. Invoice Subform"
             end;
             if not ValidAccount.IsEmpty() then begin
                 Rec.Validate("No.", ValidAccount."No.");
+                // Obtener el encabezado de la compra y asignar el monto líquido
+                if PurchHeader.Get(Rec."Document Type", Rec."Document No.") then begin
+                    if PurchHeader."Monto Liquido" <> 0 then
+                        Rec.Validate("Monto Liquido", PurchHeader."Monto Liquido"); // Asigna el valor por defecto
+                end else begin
+                    Message('No se pudo encontrar el encabezado de la compra para el documento actual.');
+                end;
             end;
         end;
     end;
